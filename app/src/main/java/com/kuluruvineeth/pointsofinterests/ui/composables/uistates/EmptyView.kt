@@ -23,8 +23,8 @@ fun EmptyView(
     background: Color = MaterialTheme.colorScheme.background,
     title: String = stringResource(id = R.string.title_ui_state_empty),
     message: String? = null,
-    icon: Int = R.drawable.ic_empty_sad_face,
-    color: Color = WarmGray400,
+    icon: Int = R.drawable.ic_empty,
+    color: Color = DarkMainColor,
     textColor: Color = DarkMainColor
 ) {
     Column(
@@ -36,12 +36,13 @@ fun EmptyView(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
+            modifier = Modifier.size(112.dp),
             imageVector = ImageVector.vectorResource(id = icon),
             contentDescription = "Empty",
             tint = color
         )
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(64.dp))
 
         Text(
             text = title,
@@ -50,7 +51,7 @@ fun EmptyView(
         )
 
         if(message != null){
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = message,
