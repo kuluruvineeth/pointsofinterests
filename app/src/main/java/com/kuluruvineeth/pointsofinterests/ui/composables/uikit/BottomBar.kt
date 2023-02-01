@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -25,14 +26,13 @@ import com.kuluruvineeth.pointsofinterests.ui.theme.UnselectedColor
 @Composable
 fun BottomBar(
     navHostController: NavHostController,
+    currentDestination: NavDestination?,
     items: List<Screen>
 ) {
     BottomNavigation(
         backgroundColor = MaterialTheme.colorScheme.background,
         elevation = 4.dp
     ) {
-        val navBackStackEntry by navHostController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry?.destination
         items.forEach { screen ->
             val isSelected = currentDestination?.hierarchy?.any{it.route == screen.route} == true
             BottomNavigationItem(

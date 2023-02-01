@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.kuluruvineeth.pointsofinterests.features.categories.ui.CategoriesScreen
 import com.kuluruvineeth.pointsofinterests.features.home.ui.HomeScreen
+import com.kuluruvineeth.pointsofinterests.features.poi.create.CreatePoiScreen
 import com.kuluruvineeth.pointsofinterests.features.profile.ui.ProfileScreen
 
 
@@ -31,6 +32,9 @@ fun Navigation(
         }
         composable(Screen.Profile.route){
             ProfileScreen(navHostController = navHostController)
+        }
+        composable(Screen.CreatePoi.route){
+            CreatePoiScreen(navHostController = navHostController)
         }
     }
 }

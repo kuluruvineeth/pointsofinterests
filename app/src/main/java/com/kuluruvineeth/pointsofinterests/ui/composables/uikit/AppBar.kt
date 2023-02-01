@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.kuluruvineeth.pointsofinterests.navigation.Screen
 import com.kuluruvineeth.pointsofinterests.navigation.getMainScreens
 import com.kuluruvineeth.pointsofinterests.navigation.routeToScreen
 import com.kuluruvineeth.pointsofinterests.ui.theme.DarkMainColor
@@ -19,11 +20,9 @@ import com.kuluruvineeth.pointsofinterests.ui.theme.DarkMainColor
 @Composable
 fun AppBar(
     title: String,
+    currentScreen: Screen?,
     navHostController: NavHostController
 ) {
-    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
-    val currentDestinaton = navBackStackEntry?.destination
-    val currentScreen = routeToScreen(currentDestinaton?.route)
     val screenTitle = currentScreen?.name?.let { stringResource(id = it) } ?: title
     TopAppBar(
         title = {

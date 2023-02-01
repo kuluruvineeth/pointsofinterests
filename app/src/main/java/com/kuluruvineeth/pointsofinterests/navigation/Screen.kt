@@ -7,7 +7,8 @@ import com.kuluruvineeth.pointsofinterests.R
 sealed class Screen(
     val route: String,
     @StringRes val name: Int,
-    @DrawableRes val icon: Int? = null
+    @DrawableRes val icon: Int? = null,
+    val isFullScreen: Boolean = false
 ){
     object Home: Screen(
         route = "screen_home",
@@ -25,9 +26,14 @@ sealed class Screen(
         R.drawable.ic_profile
     )
 
+    object CreatePoi : Screen(
+        route = "screen_create_poi",
+        R.string.screen_create_poi, isFullScreen = true
+    )
+
     companion object{
         val all = arrayListOf(
-            Home,Categories,Profile
+            Home,Categories,Profile,CreatePoi
         )
     }
 }
