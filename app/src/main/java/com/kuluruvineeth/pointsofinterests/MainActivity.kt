@@ -25,24 +25,30 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val navController = rememberNavController()
             PointsOfInterestTheme {
                 // A surface container using the 'background' color from the theme
-                Scaffold(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    topBar = {
-                        AppBar(
-                            title = stringResource(id = R.string.app_name),
-                            navController
-                        )
-                    },
-                    bottomBar = {
-                        BottomBar(navHostController = navController, items = getMainScreens())
-                    }
-                ) {paddingValues ->
-                    Navigation(navHostController = navController, paddingValues = paddingValues)
-                }
+                RootScreen()
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RootScreen() {
+    val navController = rememberNavController()
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            AppBar(
+                title = stringResource(id = R.string.app_name),
+                navController
+            )
+        },
+        bottomBar = {
+            BottomBar(navHostController = navController, items = getMainScreens())
+        }
+    ) {paddingValues ->
+        Navigation(navHostController = navController, paddingValues = paddingValues)
     }
 }

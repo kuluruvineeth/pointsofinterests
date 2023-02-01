@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.kuluruvineeth.pointsofinterests.navigation.getMainScreens
 import com.kuluruvineeth.pointsofinterests.navigation.routeToScreen
 import com.kuluruvineeth.pointsofinterests.ui.theme.DarkMainColor
 
@@ -22,16 +23,16 @@ fun AppBar(
 ) {
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
     val currentDestinaton = navBackStackEntry?.destination
-    val screenTitle = routeToScreen(currentDestinaton?.route)?.name?.let { stringResource(id = it) }
-        ?: title
+    val currentScreen = routeToScreen(currentDestinaton?.route)
+    val screenTitle = currentScreen?.name?.let { stringResource(id = it) } ?: title
     TopAppBar(
         title = {
-            Text(text = screenTitle, color = DarkMainColor)
+            Text(text = screenTitle, color = MaterialTheme.colorScheme.onBackground)
         },
         backgroundColor = MaterialTheme.colorScheme.background,
-        contentColor = DarkMainColor,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         navigationIcon = {
-            if(navHostController.previousBackStackEntry != null){
+            if(navHostController.previousBackStackEntry != null && currentScreen !in getMainScreens()){
                 IconButton(
                     onClick = {
                         navHostController.navigateUp()
@@ -39,7 +40,7 @@ fun AppBar(
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = DarkMainColor
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }

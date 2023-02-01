@@ -41,18 +41,18 @@ fun BottomBar(
                         imageVector = ImageVector.vectorResource(id = requireNotNull(screen.icon)),
                         contentDescription = stringResource(id = screen.name),
                         modifier = Modifier.size(24.dp),
-                        tint = if (isSelected) OrangeMain else UnselectedColor
+                        tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
                     )
                 },
                 label = {
                     Text(
                         text = stringResource(id = screen.name),
                         style = MaterialTheme.typography.labelSmall,
-                        color = if(isSelected) OrangeMain else UnselectedColor
+                        color = if(isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
                     )
                 },
-                selectedContentColor = OrangeMain,
-                unselectedContentColor = UnselectedColor,
+                selectedContentColor = MaterialTheme.colorScheme.primary,
+                unselectedContentColor = MaterialTheme.colorScheme.onBackground,
                 selected = isSelected,
                 onClick = {
                     navHostController.navigate(screen.route){

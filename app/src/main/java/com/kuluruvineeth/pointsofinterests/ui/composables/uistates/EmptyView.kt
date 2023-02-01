@@ -2,6 +2,7 @@ package com.kuluruvineeth.pointsofinterests.ui.composables.uistates
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,19 +36,32 @@ fun EmptyView(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            modifier = Modifier.size(112.dp),
-            imageVector = ImageVector.vectorResource(id = icon),
-            contentDescription = "Empty",
-            tint = color
-        )
 
-        Spacer(modifier = Modifier.height(64.dp))
+        Box(
+            modifier = Modifier
+                .size(150.dp)
+                .background(
+                    MaterialTheme.colorScheme.primary.copy(0.7f),
+                    CircleShape
+                )
+        ){
+            Icon(
+                modifier = Modifier
+                    .size(64.dp)
+                    .align(Alignment.Center),
+                imageVector = ImageVector.vectorResource(id = icon),
+                contentDescription = "Error icon",
+                tint = MaterialTheme.colorScheme.onPrimary
+            )
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
 
         Text(
             text = title,
             style = MaterialTheme.typography.titleLarge,
-            color = textColor
+            color = textColor,
+            maxLines = 1
         )
 
         if(message != null){
