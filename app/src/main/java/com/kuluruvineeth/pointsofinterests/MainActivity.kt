@@ -8,7 +8,10 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.FabPosition
 import androidx.compose.material3.*
+import androidx.compose.material.Scaffold
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -53,16 +56,17 @@ fun RootScreen() {
     val currentScreen = routeToScreen(currentDestination?.route)
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        floatingActionButtonPosition = FabPosition.End,
+        backgroundColor = MaterialTheme.colorScheme.background,
+        floatingActionButtonPosition = FabPosition.Center,
+        isFloatingActionButtonDocked = true,
         floatingActionButton = {
             AnimatedVisibility(
-                visible = currentScreen == Screen.Home,
+                visible = currentScreen?.isFullScreen == false,
                 enter = scaleIn(),
                 exit = scaleOut()
             ) {
                 FloatingActionButton(
-                    containerColor = MaterialTheme.colorScheme.primary,
+                    backgroundColor = MaterialTheme.colorScheme.primary,
                     onClick = {
                         navController.navigate(Screen.CreatePoi.route)
                     }

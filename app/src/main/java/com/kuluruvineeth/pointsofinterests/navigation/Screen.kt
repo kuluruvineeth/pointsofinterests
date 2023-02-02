@@ -38,6 +38,6 @@ sealed class Screen(
     }
 }
 
-fun getMainScreens() = arrayListOf(Screen.Home,Screen.Categories,Screen.Profile)
+fun getMainScreens() = arrayListOf(Screen.Home,Screen.Profile)
 
 fun routeToScreen(route: String?) : Screen? = Screen.all.find { it.route == route }
