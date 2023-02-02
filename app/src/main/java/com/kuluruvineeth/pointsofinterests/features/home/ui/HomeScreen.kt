@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -15,12 +14,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.kuluruvineeth.pointsofinterests.core.models.UiState
 import com.kuluruvineeth.pointsofinterests.features.home.viewmodel.HomeViewModel
 import com.kuluruvineeth.pointsofinterests.R
 import com.kuluruvineeth.pointsofinterests.features.home.ui.composable.CategoryFilterChips
 import com.kuluruvineeth.pointsofinterests.features.home.ui.composable.PoiCard
-import com.kuluruvineeth.pointsofinterests.features.home.ui.models.CategoryListItem
+import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.CategoryUiModel
+import com.kuluruvineeth.pointsofinterests.features.home.ui.composable.AddMoreButton
 import com.kuluruvineeth.pointsofinterests.features.home.ui.models.PoiListItem
 import com.kuluruvineeth.pointsofinterests.navigation.Screen
 import com.kuluruvineeth.pointsofinterests.ui.composables.uistates.EmptyView
@@ -51,6 +50,7 @@ fun HomeScreen(
             exit = fadeOut()
         ) {
             HomeScreenFilterContent(
+                navigationController,
                 selectedFilters = selectedFiltersState,
                 categories = categoriesState
             ){filterId ->
@@ -119,13 +119,14 @@ fun HomeScreenContent(
 
 @Composable
 fun HomeScreenFilterContent(
-    categories: List<CategoryListItem>,
+    navigationController: NavHostController,
+    categories: List<CategoryUiModel>,
     selectedFilters: List<String>,
     onClick: (String) -> Unit
 ) {
     Column {
         LazyRow{
-            categories.forEachIndexed { index, category ->
+            categories.forEach { category ->
                 item(key = category.hashCode()){
                     CategoryFilterChips(
                         categoryListItem = category,
@@ -133,12 +134,11 @@ fun HomeScreenFilterContent(
                         isSelected = category.id in selectedFilters
                     )
                 }
-                if(index < categories.size - 1){
-                    item {
-                        Spacer(
-                            modifier = Modifier.width(8.dp)
-                        )
-                    }
+                item { Spacer(modifier = Modifier.width(8.dp)) }
+            }
+            item {
+                AddMoreButton{
+                    navigationController.navigate(Screen.Categories.route)
                 }
             }
         }
@@ -146,6 +146,6 @@ fun HomeScreenFilterContent(
     }
 }
 
-private fun List<CategoryListItem>.containsId(id: String) = this.any {
+private fun List<CategoryUiModel>.containsId(id: String) = this.any {
     it.id == id
 }

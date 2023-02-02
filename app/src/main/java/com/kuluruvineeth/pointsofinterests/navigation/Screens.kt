@@ -18,7 +18,8 @@ sealed class Screen(
     object Categories : Screen(
         route = "screen_categories",
         R.string.screen_categories,
-        R.drawable.ic_category
+        R.drawable.ic_category,
+        isFullScreen = true
     )
     object Profile : Screen(
         route = "screen_profile",

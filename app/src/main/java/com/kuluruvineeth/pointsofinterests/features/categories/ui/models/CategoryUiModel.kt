@@ -1,8 +1,8 @@
-package com.kuluruvineeth.pointsofinterests.features.home.ui.models
+package com.kuluruvineeth.pointsofinterests.features.categories.ui.models
 
 import androidx.compose.ui.graphics.Color
 
-data class CategoryListItem(
+data class CategoryUiModel(
     val id: String,
     val color: Color,
     val title: String
