@@ -10,31 +10,39 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.kuluruvineeth.pointsofinterests.features.categories.ui.CategoriesScreen
 import com.kuluruvineeth.pointsofinterests.features.home.ui.HomeScreen
+import com.kuluruvineeth.pointsofinterests.features.main.PoiAppState
 import com.kuluruvineeth.pointsofinterests.features.poi.create.CreatePoiScreen
 import com.kuluruvineeth.pointsofinterests.features.profile.ui.ProfileScreen
 
 
 @Composable
 fun Navigation(
-    navHostController: NavHostController,
+    appState: PoiAppState,
     paddingValues: PaddingValues
 ) {
     NavHost(
-        navController = navHostController,
+        navController = appState.navHostController,
         startDestination = Screen.Home.route,
         modifier = Modifier.padding(paddingValues)
     ){
         composable(Screen.Home.route){
-            HomeScreen(navigationController = navHostController)
+            HomeScreen(
+                navigationController = appState.navHostController,
+                appState.searchState
+            )
         }
         composable(Screen.Categories.route){
-            CategoriesScreen(navHostController = navHostController)
+            CategoriesScreen(
+                navHostController = appState.navHostController,
+                appState.snackBarHostState,
+                appState.coroutineScope
+            )
         }
         composable(Screen.Profile.route){
-            ProfileScreen(navHostController = navHostController)
+            ProfileScreen(navHostController = appState.navHostController)
         }
         composable(Screen.CreatePoi.route){
-            CreatePoiScreen(navHostController = navHostController)
+            CreatePoiScreen(navHostController = appState.navHostController)
         }
     }
 }

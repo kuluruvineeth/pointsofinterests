@@ -46,6 +46,10 @@ class HomeViewModel @Inject constructor(
         retryTrigger.retry()
     }
 
+    fun onSearch(query: String){
+
+    }
+
     private fun collectCategories() : Flow<List<CategoryUiModel>> = flow {
         delay(1000)
         emit(mockCategories())

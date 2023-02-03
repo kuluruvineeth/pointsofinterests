@@ -14,22 +14,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.kuluruvineeth.pointsofinterests.features.main.PoiAppState
 import com.kuluruvineeth.pointsofinterests.navigation.Screen
+import com.kuluruvineeth.pointsofinterests.navigation.getMainScreens
 import com.kuluruvineeth.pointsofinterests.ui.theme.OrangeMain
 import com.kuluruvineeth.pointsofinterests.ui.theme.UnselectedColor
 
 
 @Composable
 fun BottomBar(
-    navHostController: NavHostController,
-    currentDestination: NavDestination?,
-    items: List<Screen>
+    appState: PoiAppState,
+    items: List<Screen> = getMainScreens()
 ) {
     BottomAppBar(
         backgroundColor = MaterialTheme.colorScheme.background,
@@ -37,7 +39,7 @@ fun BottomBar(
         elevation = 8.dp
     ) {
         items.forEach { screen ->
-            val isSelected = currentDestination?.hierarchy?.any{it.route == screen.route} == true
+            val isSelected = appState.currentDestination?.hierarchy?.any{it.route == screen.route} == true
             BottomNavigationItem(
                 icon = {
                     Icon(
@@ -50,7 +52,8 @@ fun BottomBar(
                 label = {
                     Text(
                         text = stringResource(id = screen.name),
-                        style = MaterialTheme.typography.labelSmall,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Medium,
                         color = if(isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
                     )
                 },
@@ -58,13 +61,7 @@ fun BottomBar(
                 unselectedContentColor = MaterialTheme.colorScheme.onBackground,
                 selected = isSelected,
                 onClick = {
-                    navHostController.navigate(screen.route){
-                        popUpTo(navHostController.graph.findStartDestination().id){
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
+                    appState.navigateToRoot(screen)
                 }
             )
         }

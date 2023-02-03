@@ -10,19 +10,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kuluruvineeth.pointsofinterests.R
+import com.kuluruvineeth.pointsofinterests.core.utils.SnackbarDisplayObject
 import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.CategoryAction
 import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.CategoryUiModel
 import com.kuluruvineeth.pointsofinterests.ui.theme.PointsOfInterestTheme
+import com.kuluruvineeth.pointsofinterests.ui.theme.WarmGray200
 
 
 @Composable
@@ -31,11 +35,11 @@ fun CategoryTypeHeader(type: String) {
         text = type,
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.9f))
+            .background(WarmGray200.copy(alpha = 0.2f))
             .padding(vertical = 4.dp, horizontal = 16.dp),
         style = MaterialTheme.typography.titleSmall,
         fontSize = 12.sp,
-        color = androidx.compose.material3.MaterialTheme.colorScheme.onTertiary
+        color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground
     )
 }
 
@@ -44,21 +48,23 @@ fun CategoryTypeHeader(type: String) {
 fun CategoryView(
     modifier: Modifier = Modifier,
     item: CategoryUiModel,
-    onAction: (CategoryAction, CategoryUiModel) -> Unit
+    onAction: (CategoryAction, CategoryUiModel, SnackbarDisplayObject?) -> Unit
 ) {
-    val dismissState = rememberDismissState()
 
-    if(dismissState.isDismissed(DismissDirection.EndToStart)){
-        onAction(CategoryAction.DELETE,item)
+    val dismissStateWrapper = rememberDismissStateWithConfirmation(
+        message = stringResource(id = R.string.message_snack_bar_category_deleted, item.title),
+        actionTitle = stringResource(id = R.string.action_undo)
+    ){displayObject ->
+        onAction(CategoryAction.DELETE,item,displayObject)
     }
 
     SwipeToDismiss(
         modifier = modifier,
-        state = dismissState,
+        state = dismissStateWrapper.dismissState,
         directions = setOf(DismissDirection.EndToStart),
         background = {
             val color by animateColorAsState(
-                when(dismissState.targetValue){
+                when(dismissStateWrapper.dismissState.targetValue){
                     DismissValue.Default -> androidx.compose.material3.MaterialTheme.colorScheme.background
                     else -> androidx.compose.material3.MaterialTheme.colorScheme.error
                 }
@@ -81,7 +87,7 @@ fun CategoryView(
             Box(
                 modifier = Modifier
                     .background(androidx.compose.material3.MaterialTheme.colorScheme.background)
-                    .clickable { onAction(CategoryAction.EDIT, item) }
+                    .clickable { onAction(CategoryAction.EDIT, item, null) }
             ){
                 Row(
                     Modifier
@@ -125,6 +131,33 @@ fun CategoryView(
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun rememberDismissStateWithConfirmation(
+    message: String,
+    actionTitle: String,
+    confirmation: (SnackbarDisplayObject) -> Unit
+) : DismissStateWithConfirmation{
+
+    val snackbarData = SnackbarDisplayObject(message,actionTitle)
+    val dismissState = rememberDismissState{
+        if(it == DismissValue.DismissedToStart){
+            confirmation(snackbarData)
+            return@rememberDismissState true
+        }
+        return@rememberDismissState false
+    }
+    return remember(snackbarData, dismissState) {
+        DismissStateWithConfirmation(dismissState, snackbarData)
+    }
+}
+
+
+class DismissStateWithConfirmation @OptIn(ExperimentalMaterialApi::class) constructor(
+    val dismissState: DismissState,
+    val snackbarData: SnackbarDisplayObject
+)
+
 @Preview
 @Composable
 fun CategoriesScreenComposablesPreview() {
@@ -140,7 +173,7 @@ fun CategoriesScreenComposablesPreview() {
 
             val model = CategoryUiModel(id = "_ID3", title = "High!", color = Color(0xFFD50000))
 
-            CategoryView(item = model) { action, model -> }
+            CategoryView(item = model) { action, model, data -> }
         }
     }
 }

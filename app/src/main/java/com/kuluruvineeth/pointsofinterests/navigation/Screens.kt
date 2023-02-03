@@ -8,12 +8,14 @@ sealed class Screen(
     val route: String,
     @StringRes val name: Int,
     @DrawableRes val icon: Int? = null,
-    val isFullScreen: Boolean = false
+    val isFullScreen: Boolean = false,
+    val menuItems: List<MenuItem> = emptyList()
 ){
     object Home: Screen(
         route = "screen_home",
         R.string.screen_home,
-        R.drawable.ic_home
+        R.drawable.ic_home,
+        menuItems = arrayListOf(MenuItem.Search)
     )
     object Categories : Screen(
         route = "screen_categories",

@@ -7,10 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,18 +25,26 @@ import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.Categor
 import com.kuluruvineeth.pointsofinterests.features.categories.viewmodel.CategoriesViewModel
 import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.PrimaryButton
 import com.kuluruvineeth.pointsofinterests.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun CategoriesScreen(
     navHostController: NavHostController,
+    snackbarHostState: SnackbarHostState,
+    coroutineScope: CoroutineScope,
     categoriesViewModel: CategoriesViewModel = hiltViewModel()
 ) {
     val categoriesState by categoriesViewModel.categoriesState.collectAsState()
+    val itemsToDelete by categoriesViewModel.itemsToDelete.collectAsState()
     Box(modifier = Modifier.background(MaterialTheme.colorScheme.background)){
         CategoriesContent(
             viewModel = categoriesViewModel,
+            coroutineScope = coroutineScope,
+            snackbarHostState = snackbarHostState,
             navigationController = navHostController,
-            categories = categoriesState
+            categories = categoriesState,
+            itemsToDelete = itemsToDelete
         )
     }
 }
@@ -48,8 +53,11 @@ fun CategoriesScreen(
 @Composable
 fun CategoriesContent(
     viewModel: CategoriesViewModel,
+    coroutineScope: CoroutineScope,
+    snackbarHostState: SnackbarHostState,
     navigationController: NavHostController,
-    categories: Map<String,List<CategoryUiModel>>
+    categories: Map<String,List<CategoryUiModel>>,
+    itemsToDelete: List<String>
 ) {
     val context = LocalContext.current
 
@@ -58,11 +66,37 @@ fun CategoriesContent(
             categories.entries.forEach { group ->
                 stickyHeader {
                     CategoryTypeHeader(type = group.key)
+                    Divider(
+                        modifier = Modifier.animateItemPlacement(),
+                        thickness = 0.5.dp,
+                        color = MaterialTheme.colorScheme.onBackground.copy(
+                            alpha = 0.2f
+                        )
+                    )
                 }
-                items(group.value, {it.hashCode()}){category ->
-                    CategoryView(Modifier.animateItemPlacement(),category){action,model ->
+                items(group.value.filter{it.id !in itemsToDelete}, {it.hashCode()}){category ->
+                    CategoryView(Modifier.animateItemPlacement(),category){action,model, displayData ->
                         when(action){
-                            CategoryAction.DELETE -> viewModel.onDeleteItem(model.id)
+                            CategoryAction.DELETE -> {
+                                viewModel.onDeleteItem(model.id)
+                                displayData?.let{snackbarDisplayData ->
+                                    coroutineScope.launch {
+                                        val snackBarResult = snackbarHostState.showSnackbar(
+                                            message = snackbarDisplayData.message,
+                                            actionLabel = snackbarDisplayData.action,
+                                            duration = SnackbarDuration.Short
+                                        )
+                                        when(snackBarResult){
+                                            SnackbarResult.Dismissed -> {
+                                                viewModel.onCommitDeleteItem(model.id)
+                                            }
+                                            SnackbarResult.ActionPerformed -> {
+                                                viewModel.onUndoDeleteItem(model.id)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                             CategoryAction.EDIT -> Toast.makeText(context,"Edit ${model.id}", Toast.LENGTH_SHORT).show()
                         }
                     }

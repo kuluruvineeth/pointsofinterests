@@ -30,14 +30,18 @@ fun PrimaryButton(
             vertical = paddingsVertical
         ),
         colors = ButtonDefaults.buttonColors(
-            containerColor = OrangeMain,
-            contentColor = White,
-            disabledContainerColor = OrangeSuperLight,
-            disabledContentColor = White
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            disabledContainerColor = MaterialTheme.colorScheme.primary.copy(
+                alpha = 0.5f
+            ),
+            disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(
+                alpha = 0.5f
+            )
         ),
         enabled = enabled,
         onClick = onClick
     ) {
-        Text(text = text.uppercase(), color = White,style = MaterialTheme.typography.titleMedium)
+        Text(text = text.uppercase(),style = MaterialTheme.typography.titleMedium)
     }
 }

@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -26,11 +27,13 @@ import com.kuluruvineeth.pointsofinterests.navigation.Screen
 import com.kuluruvineeth.pointsofinterests.ui.composables.uistates.EmptyView
 import com.kuluruvineeth.pointsofinterests.ui.composables.uistates.ErrorView
 import com.kuluruvineeth.pointsofinterests.ui.composables.uistates.ProgressView
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HomeScreen(
     navigationController : NavHostController,
+    searchState: MutableState<TextFieldValue>,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
 
@@ -40,9 +43,13 @@ fun HomeScreen(
         mutableStateOf<List<String>>(emptyList())
     }
 
+    LaunchedEffect(key1 = searchState.value){
+        homeViewModel.onSearch(searchState.value.text)
+    }
+
     Column(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp))
             .background(MaterialTheme.colorScheme.background)
     ) {
         AnimatedVisibility(
