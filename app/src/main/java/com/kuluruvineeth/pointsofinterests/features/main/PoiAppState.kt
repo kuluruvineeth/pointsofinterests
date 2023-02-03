@@ -71,8 +71,13 @@ class PoiAppState(
         }
     }
 
-    fun navigateTo(screen: Screen){
-        navHostController.navigate(screen.route)
+    fun navigateTo(screen: Screen, arguments: List<Pair<String, Any>> = emptyList()) {
+        val route = if (arguments.isEmpty().not()) {
+            screen.routePath + "?" + arguments.joinToString(separator = ",") { "${it.first}=${it.second}" }
+        } else {
+            screen.route
+        }
+        navHostController.navigate(route)
     }
 
     fun onBackClick(){
@@ -83,6 +88,7 @@ class PoiAppState(
         when(actionType){
             MenuActionType.BACK -> onBackClick()
             MenuActionType.SEARCH -> showSearchBarState = true
+            MenuActionType.ADD -> navigateTo(Screen.CategoriesDetailed)
         }
     }
 

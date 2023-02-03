@@ -1,5 +1,6 @@
 package com.kuluruvineeth.pointsofinterests.features.main
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
@@ -10,6 +11,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
 import com.kuluruvineeth.pointsofinterests.navigation.Screen
 import com.kuluruvineeth.pointsofinterests.R
@@ -22,7 +24,16 @@ import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.BottomBar
 fun PoiMainScreen(
     appState: PoiAppState = rememberPoiAppState()
 ) {
-    Scaffold(
+
+    BackHandler(appState.showSearchBarState) {
+        appState.showSearchBarState = false
+    }
+
+    LaunchedEffect(key1 = appState.currentScreen != Screen.Home && appState.showSearchBarState) {
+        appState.showSearchBarState = false
+    }
+
+        Scaffold(
         backgroundColor = MaterialTheme.colorScheme.background,
         floatingActionButtonPosition = FabPosition.Center,
         isFloatingActionButtonDocked = true,

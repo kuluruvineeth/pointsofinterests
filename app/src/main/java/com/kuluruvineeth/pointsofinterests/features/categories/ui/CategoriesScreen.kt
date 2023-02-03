@@ -25,12 +25,15 @@ import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.Categor
 import com.kuluruvineeth.pointsofinterests.features.categories.viewmodel.CategoriesViewModel
 import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.PrimaryButton
 import com.kuluruvineeth.pointsofinterests.R
+import com.kuluruvineeth.pointsofinterests.features.categories.ui.composable.EditableCategoryView
+import com.kuluruvineeth.pointsofinterests.features.main.PoiAppState
+import com.kuluruvineeth.pointsofinterests.navigation.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun CategoriesScreen(
-    navHostController: NavHostController,
+    appState: PoiAppState,
     snackbarHostState: SnackbarHostState,
     coroutineScope: CoroutineScope,
     categoriesViewModel: CategoriesViewModel = hiltViewModel()
@@ -42,7 +45,7 @@ fun CategoriesScreen(
             viewModel = categoriesViewModel,
             coroutineScope = coroutineScope,
             snackbarHostState = snackbarHostState,
-            navigationController = navHostController,
+            appState = appState,
             categories = categoriesState,
             itemsToDelete = itemsToDelete
         )
@@ -52,14 +55,13 @@ fun CategoriesScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CategoriesContent(
+    appState: PoiAppState,
     viewModel: CategoriesViewModel,
     coroutineScope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
-    navigationController: NavHostController,
     categories: Map<String,List<CategoryUiModel>>,
     itemsToDelete: List<String>
 ) {
-    val context = LocalContext.current
 
     Column {
         LazyColumn(Modifier.weight(1f)){
@@ -75,30 +77,37 @@ fun CategoriesContent(
                     )
                 }
                 items(group.value.filter{it.id !in itemsToDelete}, {it.hashCode()}){category ->
-                    CategoryView(Modifier.animateItemPlacement(),category){action,model, displayData ->
-                        when(action){
-                            CategoryAction.DELETE -> {
-                                viewModel.onDeleteItem(model.id)
-                                displayData?.let{snackbarDisplayData ->
-                                    coroutineScope.launch {
-                                        val snackBarResult = snackbarHostState.showSnackbar(
-                                            message = snackbarDisplayData.message,
-                                            actionLabel = snackbarDisplayData.action,
-                                            duration = SnackbarDuration.Short
-                                        )
-                                        when(snackBarResult){
-                                            SnackbarResult.Dismissed -> {
-                                                viewModel.onCommitDeleteItem(model.id)
-                                            }
-                                            SnackbarResult.ActionPerformed -> {
-                                                viewModel.onUndoDeleteItem(model.id)
+                    if(category.isMutableCategory){
+                        EditableCategoryView(Modifier.animateItemPlacement(),category){action,model, displayData ->
+                            when(action){
+                                CategoryAction.DELETE -> {
+                                    viewModel.onDeleteItem(category.id)
+                                    displayData?.let{snackbarDisplayData ->
+                                        coroutineScope.launch {
+                                            val snackBarResult = snackbarHostState.showSnackbar(
+                                                message = snackbarDisplayData.message,
+                                                actionLabel = snackbarDisplayData.action,
+                                                duration = SnackbarDuration.Short
+                                            )
+                                            when(snackBarResult){
+                                                SnackbarResult.Dismissed -> {
+                                                    viewModel.onCommitDeleteItem(model.id)
+                                                }
+                                                SnackbarResult.ActionPerformed -> {
+                                                    viewModel.onUndoDeleteItem(model.id)
+                                                }
                                             }
                                         }
                                     }
                                 }
+                                CategoryAction.EDIT -> appState.navigateTo(
+                                    Screen.CategoriesDetailed,
+                                    listOf(Screen.CategoriesDetailed.ARG_CATEGORY_ID to model.id)
+                                )
                             }
-                            CategoryAction.EDIT -> Toast.makeText(context,"Edit ${model.id}", Toast.LENGTH_SHORT).show()
                         }
+                    }else{
+                        CategoryView(Modifier.animateItemPlacement(), itemModel = category)
                     }
                     Divider(
                         modifier = Modifier.animateItemPlacement(),
@@ -107,22 +116,6 @@ fun CategoriesContent(
                     )
                 }
             }
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-        Surface(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.background),
-            shape = RoundedCornerShape(16.dp),
-            shadowElevation = 8.dp
-        ) {
-            PrimaryButton(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background),
-                text = stringResource(id = R.string.button_create_new),
-                onClick = {
-                    Toast.makeText(context,"Create new category",Toast.LENGTH_SHORT).show()
-                }
-            )
         }
     }
 }

@@ -10,9 +10,11 @@ sealed class MenuItem(
 ){
     object Back : MenuItem(R.drawable.ic_back,MenuActionType.BACK)
     object Search : MenuItem(R.drawable.ic_search, MenuActionType.SEARCH)
+    object Add : MenuItem(R.drawable.ic_add, MenuActionType.ADD)
 }
 
 enum class MenuActionType{
     BACK,
-    SEARCH
+    SEARCH,
+    ADD
 }
