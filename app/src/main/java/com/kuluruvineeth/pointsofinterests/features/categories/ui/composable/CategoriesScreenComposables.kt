@@ -62,18 +62,19 @@ fun CategoryView(
         modifier = modifier,
         state = dismissStateWrapper.dismissState,
         directions = setOf(DismissDirection.EndToStart),
+        dismissThresholds = {FractionalThreshold(0.4f)},
         background = {
             val color by animateColorAsState(
                 when(dismissStateWrapper.dismissState.targetValue){
-                    DismissValue.Default -> androidx.compose.material3.MaterialTheme.colorScheme.background
+                    DismissValue.Default -> androidx.compose.material3.MaterialTheme.colorScheme.error.copy(alpha = 0.5f)
                     else -> androidx.compose.material3.MaterialTheme.colorScheme.error
                 }
             )
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(color.copy(alpha = 0.5f))
-                    .padding(horizontal = 20.dp),
+                    .background(color)
+                    .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.CenterEnd
             ){
                 Icon(
