@@ -20,8 +20,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -54,7 +56,9 @@ fun AddMoreButton(
         label = {
             Text(
                 text = stringResource(id = R.string.add_more),
-                fontSize = 11.sp
+                fontSize = 12.sp,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Medium
             )
         },
         border = AssistChipDefaults.assistChipBorder(
@@ -83,7 +87,7 @@ fun CategoryDisplayChips(
         Text(
             modifier = Modifier.align(Alignment.Center),
             text = "#${categoryListItem.title}",
-            style = MaterialTheme.typography.labelSmall,
+            style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = size.textSize
         )
@@ -126,7 +130,9 @@ fun CategoryFilterChips(
         label = {
             Text(
                 text = categoryListItem.title,
-                fontSize = size.textSize
+                fontSize = size.textSize,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Medium
             )
         },
         border = FilterChipDefaults.filterChipBorder(
@@ -177,20 +183,24 @@ fun PoiCard(
                 ) {
                     Text(
                         text = poiListItem.title,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onBackground,
-                        maxLines = 1
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = 18.sp
                     )
-                    Spacer(modifier = Modifier.size(4.dp))
+                    Spacer(modifier = Modifier.size(8.dp))
                     Text(
                         text = poiListItem.subtitle,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = MaterialTheme.colorScheme.onBackground,
+                        maxLines = 4,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     FlowRow(
-                        mainAxisSpacing = 2.dp,
+                        mainAxisSpacing = 4.dp,
                         crossAxisSpacing = 2.dp
                     ) {
                         poiListItem.categories.forEach{
@@ -212,7 +222,8 @@ fun PoiCard(
                     text = text,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.Medium
                 )
                 Spacer(modifier = Modifier.size(8.dp))
 
@@ -222,7 +233,8 @@ fun PoiCard(
                     color = MaterialTheme.colorScheme.onBackground.copy(
                         alpha = 0.5f
                     ),
-                    textAlign = TextAlign.End
+                    textAlign = TextAlign.End,
+                    fontWeight = FontWeight.Medium
                 )
                 
                 Spacer(modifier = Modifier.size(8.dp))
@@ -259,13 +271,13 @@ data class ChipSize(
 
 object ChipSizeDefaults{
     fun smallChip() = ChipSize(
-        textSize = 8.sp,
+        textSize = 10.sp,
         paddingHorizontal = 4.dp,
         paddingVertical = 2.dp
     )
 
     fun basicChip() = ChipSize(
-        textSize = 11.sp,
+        textSize = 12.sp,
         paddingHorizontal = 8.dp,
         paddingVertical = 4.dp
     )
@@ -274,7 +286,7 @@ object ChipSizeDefaults{
 @Preview
 @Composable
 fun HomeScreenItemsPreview() {
-    PointsOfInterestTheme(dynamicColor = false, darkTheme = false) {
+    PointsOfInterestTheme(dynamicColor = false, darkTheme = true) {
         val mockItems = arrayListOf(
             CategoryUiModel(
                 id = "_ID", title = "Business",color=Color(0xFF2980B9)

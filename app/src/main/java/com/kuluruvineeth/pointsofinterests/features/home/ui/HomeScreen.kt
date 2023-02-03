@@ -16,6 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.kuluruvineeth.pointsofinterests.features.home.viewmodel.HomeViewModel
 import com.kuluruvineeth.pointsofinterests.R
+import com.kuluruvineeth.pointsofinterests.core.utils.containsId
 import com.kuluruvineeth.pointsofinterests.features.home.ui.composable.CategoryFilterChips
 import com.kuluruvineeth.pointsofinterests.features.home.ui.composable.PoiCard
 import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.CategoryUiModel
@@ -144,8 +145,4 @@ fun HomeScreenFilterContent(
         }
         Spacer(modifier = Modifier.height(16.dp))
     }
-}
-
-private fun List<CategoryUiModel>.containsId(id: String) = this.any {
-    it.id == id
 }

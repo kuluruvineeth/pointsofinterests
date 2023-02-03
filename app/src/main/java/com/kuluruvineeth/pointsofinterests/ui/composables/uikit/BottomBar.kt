@@ -34,7 +34,7 @@ fun BottomBar(
     BottomAppBar(
         backgroundColor = MaterialTheme.colorScheme.background,
         cutoutShape = CircleShape,
-        elevation = 4.dp
+        elevation = 8.dp
     ) {
         items.forEach { screen ->
             val isSelected = currentDestination?.hierarchy?.any{it.route == screen.route} == true

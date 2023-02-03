@@ -3,6 +3,7 @@ package com.kuluruvineeth.pointsofinterests.core.utils
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
+import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.CategoryUiModel
 
 /*
 @Composable
@@ -12,3 +13,5 @@ fun stringFromResource(
 ) : String? = stringFromResource(res = res)
 
  */
+
+fun List<CategoryUiModel>.containsId(id: String) = this.any { it.id == id }

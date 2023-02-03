@@ -5,6 +5,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -14,6 +16,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -23,7 +26,8 @@ import com.kuluruvineeth.pointsofinterests.features.categories.ui.composable.Cat
 import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.CategoryAction
 import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.CategoryUiModel
 import com.kuluruvineeth.pointsofinterests.features.categories.viewmodel.CategoriesViewModel
-
+import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.PrimaryButton
+import com.kuluruvineeth.pointsofinterests.R
 
 @Composable
 fun CategoriesScreen(
@@ -45,25 +49,23 @@ fun CategoriesScreen(
 fun CategoriesContent(
     viewModel: CategoriesViewModel,
     navigationController: NavHostController,
-    categories: List<CategoryUiModel>
+    categories: Map<String,List<CategoryUiModel>>
 ) {
     val context = LocalContext.current
 
     Column {
-        LazyColumn{
-            stickyHeader {
-                CategoryTypeHeader(type = "Test Header")
-            }
-            categories.forEach { category ->
-                item(key = category.hashCode()){
+        LazyColumn(Modifier.weight(1f)){
+            categories.entries.forEach { group ->
+                stickyHeader {
+                    CategoryTypeHeader(type = group.key)
+                }
+                items(group.value, {it.hashCode()}){category ->
                     CategoryView(Modifier.animateItemPlacement(),category){action,model ->
                         when(action){
                             CategoryAction.DELETE -> viewModel.onDeleteItem(model.id)
                             CategoryAction.EDIT -> Toast.makeText(context,"Edit ${model.id}", Toast.LENGTH_SHORT).show()
                         }
                     }
-                }
-                item("Divider${category.id}"){
                     Divider(
                         modifier = Modifier.animateItemPlacement(),
                         thickness = 0.5.dp,
@@ -72,6 +74,21 @@ fun CategoriesContent(
                 }
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(4.dp))
+        Surface(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background),
+            shape = RoundedCornerShape(16.dp),
+            shadowElevation = 8.dp
+        ) {
+            PrimaryButton(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background),
+                text = stringResource(id = R.string.button_create_new),
+                onClick = {
+                    Toast.makeText(context,"Create new category",Toast.LENGTH_SHORT).show()
+                }
+            )
+        }
     }
 }
