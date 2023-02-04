@@ -1,4 +1,4 @@
 package com.kuluruvineeth.data.core
 
 
-const val UNSPECIFIED_ID = -1
+const val UNSPECIFIED_ID = 0

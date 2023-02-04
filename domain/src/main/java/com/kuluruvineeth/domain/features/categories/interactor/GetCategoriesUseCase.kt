@@ -10,7 +10,7 @@ class GetCategoriesUseCase @Inject constructor(
     private val repository: CategoriesRepository
 ) : FlowUseCase<Unit, List<Category>>(){
 
-    override suspend fun operation(
+    override fun operation(
         params: Unit
     ): Flow<List<Category>> = repository.getCategories()
 }

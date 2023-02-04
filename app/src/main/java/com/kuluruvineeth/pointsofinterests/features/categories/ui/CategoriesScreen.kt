@@ -59,7 +59,7 @@ fun CategoriesContent(
     viewModel: CategoriesViewModel,
     coroutineScope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
-    categories: Map<String,List<CategoryUiModel>>,
+    categories: Map<Int,List<CategoryUiModel>>,
     itemsToDelete: List<String>
 ) {
 
@@ -67,7 +67,7 @@ fun CategoriesContent(
         LazyColumn(Modifier.weight(1f)){
             categories.entries.forEach { group ->
                 stickyHeader {
-                    CategoryTypeHeader(type = group.key)
+                    CategoryTypeHeader(type = stringResource(id = group.key))
                     Divider(
                         modifier = Modifier.animateItemPlacement(),
                         thickness = 0.5.dp,

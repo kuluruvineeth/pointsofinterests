@@ -9,9 +9,9 @@ import javax.inject.Inject
 
 class GetCategoryUseCase @Inject constructor(
     private val repository: CategoriesRepository
-) : FlowUseCase<GetCategoryUseCase.Params, Category>(){
+) : UseCase<GetCategoryUseCase.Params, Category>(){
 
-    override suspend fun operation(params: Params): Flow<Category> =
+    override suspend fun operation(params: Params): Category =
         repository.getCategory(params.categoryId)
 
     data class Params(val categoryId: String)

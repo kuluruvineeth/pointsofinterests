@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.flowOn
 
 abstract class FlowUseCase<PARAMS,RESULT>(private val dispatcher: CoroutineDispatcher = Dispatchers.IO){
 
-    abstract suspend fun operation(params: PARAMS): Flow<RESULT>
+    abstract fun operation(params: PARAMS): Flow<RESULT>
 
-    suspend operator fun invoke(params: PARAMS): Flow<RESULT> =
+    operator fun invoke(params: PARAMS): Flow<RESULT> =
         operation(params).flowOn(dispatcher)
 }
