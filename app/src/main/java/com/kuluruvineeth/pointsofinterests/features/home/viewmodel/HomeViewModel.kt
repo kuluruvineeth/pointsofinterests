@@ -7,6 +7,7 @@ import com.kuluruvineeth.pointsofinterests.core.utils.RetryTrigger
 import com.kuluruvineeth.pointsofinterests.core.utils.retryableFlow
 import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.CategoryUiModel
 import com.kuluruvineeth.pointsofinterests.features.home.ui.models.PoiListItem
+import com.kuluruvineeth.pointsofinterests.features.home.ui.models.PoiSortByOption
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -47,6 +48,10 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onSearch(query: String){
+
+    }
+
+    fun onApplySortBy(option: PoiSortByOption){
 
     }
 

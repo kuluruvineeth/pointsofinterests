@@ -29,7 +29,9 @@ fun Navigation(
         composable(Screen.Home.route){
             HomeScreen(
                 navigationController = appState.navHostController,
-                appState.searchState
+                appState.searchState,
+                appState.showSortDialog,
+                {appState.showSortDialog = false}
             )
         }
         categoriesGraph(appState)
