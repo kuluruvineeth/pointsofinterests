@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kuluruvineeth.domain.features.categories.interactor.*
 import com.kuluruvineeth.domain.features.categories.models.CategoryType
 import com.kuluruvineeth.pointsofinterests.core.utils.containsId
 import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.CategoryUiModel
@@ -19,7 +20,13 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class CategoriesViewModel @Inject constructor() : ViewModel() {
+class CategoriesViewModel @Inject constructor(
+    private val getCategoriesUseCase: GetCategoriesUseCase,
+    private val getCategoryUseCase: GetCategoryUseCase,
+    private val deleteCategoryUseCase: DeleteCategoryUseCase,
+    private val updateCategoryUseCase: UpdateCategoryUseCase,
+    private val addCategoryUseCase: AddCategoryUseCase
+) : ViewModel() {
 
 
     val detailedCategoriesUiState = MutableStateFlow<DetailedCategoriesUiState>(DetailedCategoriesUiState.Loading)

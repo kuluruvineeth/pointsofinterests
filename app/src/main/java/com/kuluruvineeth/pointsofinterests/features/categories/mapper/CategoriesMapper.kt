@@ -15,7 +15,7 @@ fun Category.toUiModel() = CategoryUiModel(
 )
 
 fun CategoryUiModel.toDomainModel() = Category(
-    id = id.toInt(),
+    id = id,
     title = title,
     color = color.toArgb(),
     isMutable = isMutableCategory,
