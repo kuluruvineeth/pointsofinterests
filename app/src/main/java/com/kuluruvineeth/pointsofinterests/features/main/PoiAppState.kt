@@ -54,7 +54,7 @@ class PoiAppState(
         @Composable get() = routeToScreen(currentDestination?.route)
 
     val isRootScreen: Boolean
-        @Composable get() = currentScreen in getMainScreens()
+        @Composable get() = currentScreen in getMainScreens() || currentScreen == null
 
     val isCurrentFullScreen: Boolean
      @Composable get() = currentScreen?.isFullScreen == true
