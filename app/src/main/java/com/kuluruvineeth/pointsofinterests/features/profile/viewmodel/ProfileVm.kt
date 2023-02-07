@@ -2,12 +2,15 @@ package com.kuluruvineeth.pointsofinterests.features.profile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.tasks.Task
 import com.kuluruvineeth.domain.features.profile.interactor.DeleteUseProfileUseCase
 import com.kuluruvineeth.domain.features.profile.interactor.GetProfileUseCase
 import com.kuluruvineeth.domain.features.profile.interactor.SetUserProfileUseCase
 import com.kuluruvineeth.domain.features.profile.interactor.SetUserSettingStateUseCase
 import com.kuluruvineeth.domain.features.profile.module.ManualSettings
 import com.kuluruvineeth.domain.features.profile.module.Profile
+import com.kuluruvineeth.domain.features.profile.module.UserProfile
 import com.kuluruvineeth.pointsofinterests.features.profile.models.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -42,7 +45,18 @@ class ProfileVm @Inject constructor(
         }
     }
 
-    fun onSignInClicked(){}
+    fun onUserSignedIn(task: Task<GoogleSignInAccount>){
+        viewModelScope.launch {
+            val account = task.result
+            val userProfile = UserProfile(
+                authToken = account.idToken,
+                name = account.displayName,
+                email = account.email,
+                image = account.photoUrl.toString()
+            )
+            setUserProfileUseCase(SetUserProfileUseCase.Params(userProfile))
+        }
+    }
 
     fun onSignOutClicked(){
         viewModelScope.launch {

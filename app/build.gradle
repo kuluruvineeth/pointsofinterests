@@ -90,4 +90,7 @@ dependencies {
 
     //Accompanist Flow-layout
     implementation "com.google.accompanist:accompanist-flowlayout:0.28.0"
+
+    //Google signin
+    implementation 'com.google.android.gms:play-services-auth:20.4.0'
 }
