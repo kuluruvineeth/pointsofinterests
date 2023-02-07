@@ -4,5 +4,5 @@ data class UserSettings(
     val isUseSystemTheme: Boolean,
     val isDarkMode: Boolean,
     val isAutoGcEnabled: Boolean,
-    val isShownOnBoarding: Boolean
+    val isShowOnBoarding: Boolean
 )

@@ -5,6 +5,9 @@ import com.kuluruvineeth.data.core.Remote
 import com.kuluruvineeth.data.features.categories.datasource.CategoriesDataSource
 import com.kuluruvineeth.data.features.categories.datasource.CategoriesFakeRemoteDataSource
 import com.kuluruvineeth.data.features.categories.datasource.CategoriesLocalDataSource
+import com.kuluruvineeth.data.features.profile.datasource.ProfileDataSource
+import com.kuluruvineeth.data.features.profile.datasource.ProfileLocalDataSource
+//import com.kuluruvineeth.data.features.profile.datasource.ProfileLocalDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -24,4 +27,10 @@ interface DataSourceModule {
     @Remote
     fun bindCategoryRemoteDataSource(dataSource: CategoriesFakeRemoteDataSource):
             CategoriesDataSource
+
+
+    @Binds
+    @Local
+    fun bindProfileLocalDataSource(dataSource: ProfileLocalDataSource): ProfileDataSource
+
 }
