@@ -76,13 +76,19 @@ fun ProfileScreen(
         startForResult.launch(getGoogleLoginAuth(context).signInIntent)
     }
 
+    val onSignOutClicked: () -> Unit = {
+        vm.onSignOutClicked()
+        getGoogleLoginAuth(context).signOut()
+    }
+
     LazyColumn{
         profileSectionsState.forEach { section ->
             item(section.type){
                 if(section is ProfileSectionItem.AccountSectionItem){
                     AccountSection(
                         userInfo = section.userInfo,
-                        onSignInClicked
+                        onSignInClicked,
+                        onSignOutClicked
                     )
                 }
                 if(section is ProfileSectionItem.NavigationItem){
@@ -175,7 +181,8 @@ fun NavigationSection(
 @Composable
 fun AccountSection(
     userInfo: UserInfo?,
-    onSignInClicked: () -> Unit
+    onSignInClicked: () -> Unit,
+    onSignOutClicked: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -249,6 +256,22 @@ fun AccountSection(
                         color = MaterialTheme.colorScheme.onBackground
                     )
                 }
+
+                Spacer(modifier = Modifier.size(24.dp))
+
+                IconButton(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape),
+                    onClick = onSignOutClicked
+                ) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_exit),
+                        contentDescription = "",
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
             }
         }
     }
@@ -302,7 +325,7 @@ fun BaseSettingContent(
 private fun getGoogleLoginAuth(context: Context): GoogleSignInClient{
     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
         .requestEmail()
-        .requestIdToken("TODO")
+        .requestIdToken(context.getString(R.string.gcp_id))
         .requestId()
         .requestProfile()
         .build()
