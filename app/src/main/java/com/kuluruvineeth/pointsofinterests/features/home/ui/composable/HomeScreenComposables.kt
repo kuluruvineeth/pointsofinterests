@@ -284,6 +284,7 @@ object ChipSizeDefaults{
     )
 }
 
+/*
 @Preview
 @Composable
 fun HomeScreenItemsPreview() {
@@ -323,4 +324,4 @@ fun HomeScreenItemsPreview() {
         }
     }
 }
-
+*/
