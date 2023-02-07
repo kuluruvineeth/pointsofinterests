@@ -3,11 +3,13 @@ package com.kuluruvineeth.pointsofinterests.features.profile.ui
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -22,6 +24,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.SubcomposeAsyncImage
@@ -37,16 +41,13 @@ import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.PulsingProgressB
 @Composable
 fun ProfileScreen(
     navHostController: NavHostController,
-    vm: ProfileVm = viewModel()
+    vm: ProfileVm = hiltViewModel()
 ) {
-    val profileSectionsState by vm.profileScreenUiState.collectAsState()
-    val context = LocalContext.current
+    val profileSectionsState by vm.profileState.collectAsState()
 
     val onNavigate: (ProfileSectionType) -> Unit = {type ->
         if(type == ProfileSectionType.CATEGORIES){
             navHostController.navigate(Screen.Categories.route)
-        }else{
-            Toast.makeText(context, "This feature is under development",Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -86,13 +87,13 @@ fun ProfileScreen(
 @Composable
 fun BooleanSettingsSection(
     item: ProfileSectionItem.BooleanSettingsItem,
-    onToggleBooleanSettings: (ProfileSectionType) -> Unit
+    onToggleBooleanSettings: (ProfileSectionType,Boolean) -> Unit
 ) {
     Row(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background, shape = RectangleShape)
             .clickable(item.isEnabled) {
-                onToggleBooleanSettings(item.type)
+                onToggleBooleanSettings(item.type, item.state)
             },
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
@@ -110,7 +111,7 @@ fun BooleanSettingsSection(
         Switch(
             modifier = Modifier.padding(end = 16.dp),
             checked = item.state,
-            onCheckedChange ={},
+            onCheckedChange =null,
             enabled = item.isEnabled,
             colors = SwitchDefaults.colors(
                 checkedTrackColor = MaterialTheme.colorScheme.secondary,
@@ -159,11 +160,32 @@ fun AccountSection(
         contentAlignment = Alignment.Center
     ){
         if(userInfo == null){
-            PrimaryButton(
-                Modifier.fillMaxWidth(),
-                text = stringResource(id = R.string.button_authorize),
+            ElevatedButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 48.dp, vertical = 16.dp),
+                shape = RoundedCornerShape(6.dp),
+                elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 2.dp),
+                colors = ButtonDefaults.elevatedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground,
+                    disabledContainerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+                    disabledContentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                ),
                 onClick = { onSignInClicked() }
-            )
+            ) {
+                Image(
+                    modifier = Modifier.size(20.dp),
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_google_icon), 
+                    contentDescription = ""
+                )
+                Text(
+                    modifier = Modifier.padding(6.dp),
+                    text = stringResource(id = R.string.button_signin_with_google),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontSize = 16.sp
+                )
+            }
         }else{
             Row(
                 modifier = Modifier.fillMaxWidth(),

@@ -2,6 +2,7 @@ package com.kuluruvineeth.pointsofinterests.ui.composables.uikit
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -35,6 +36,7 @@ fun OutlineButton(
             disabledContentColor = MaterialTheme.colorScheme.onBackground.copy(0.5f),
             disabledContainerColor = MaterialTheme.colorScheme.onBackground
         ),
+        shape = RoundedCornerShape(8.dp),
         border = BorderStroke(2.dp, borderColor),
         enabled = enabled,
         onClick = onClick

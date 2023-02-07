@@ -1,6 +1,7 @@
 package com.kuluruvineeth.pointsofinterests.ui.composables.uikit
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +30,7 @@ fun PrimaryButton(
             horizontal = paddingsHorizontal,
             vertical = paddingsVertical
         ),
+        shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
