@@ -85,7 +85,7 @@ fun HomeScreen(
         Box(modifier = Modifier.weight(1f)){
             when(homeContentState){
                 is HomeViewModel.HomeUiContentState.Loading -> ProgressView()
-                HomeViewModel.HomeUiContentState.Empty -> EmptyView(
+                is HomeViewModel.HomeUiContentState.Empty -> EmptyView(
                     message = stringResource(id = R.string.message_ui_state_empty_main_screen)
                 )
                 is HomeViewModel.HomeUiContentState.Error -> {
@@ -94,7 +94,7 @@ fun HomeScreen(
                         homeViewModel.onRetry()
                     }
                 }
-                is HomeViewModel.HomeUiContentState.Result -> {
+                else -> {
                     val filteredList = (homeContentState as HomeViewModel.HomeUiContentState.Result)
                         .poiList.filter{poi ->
                             selectedFiltersState.isEmpty() || selectedFiltersState.all {

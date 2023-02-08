@@ -47,6 +47,12 @@ sealed class Screen(
         R.drawable.ic_profile
     )
 
+    object About : Screen(
+        route = "screen_about",
+        R.string.screen_about,
+        isFullScreen = true
+    )
+
     object CreatePoi : Screen(
         route = "screen_create_poi",
         R.string.screen_create_poi, isFullScreen = true
@@ -54,7 +60,7 @@ sealed class Screen(
 
     companion object{
         val all = arrayListOf(
-            Home,Categories,Profile,CreatePoi,CategoriesList,CategoriesDetailed
+            Home,Categories,Profile,CreatePoi,CategoriesList,CategoriesDetailed,About
         )
     }
 }
