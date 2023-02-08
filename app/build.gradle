@@ -93,4 +93,7 @@ dependencies {
 
     //Google signin
     implementation 'com.google.android.gms:play-services-auth:20.4.0'
+
+    //Browser
+    implementation "androidx.browser:browser:1.4.0"
 }
