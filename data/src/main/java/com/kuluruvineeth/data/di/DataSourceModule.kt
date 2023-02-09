@@ -5,6 +5,8 @@ import com.kuluruvineeth.data.core.Remote
 import com.kuluruvineeth.data.features.categories.datasource.CategoriesDataSource
 import com.kuluruvineeth.data.features.categories.datasource.CategoriesFakeRemoteDataSource
 import com.kuluruvineeth.data.features.categories.datasource.CategoriesLocalDataSource
+import com.kuluruvineeth.data.features.poi.datasource.PoiDataSource
+import com.kuluruvineeth.data.features.poi.datasource.PoiLocalDataSource
 import com.kuluruvineeth.data.features.profile.datasource.ProfileDataSource
 import com.kuluruvineeth.data.features.profile.datasource.ProfileLocalDataSource
 //import com.kuluruvineeth.data.features.profile.datasource.ProfileLocalDataSource
@@ -33,4 +35,7 @@ interface DataSourceModule {
     @Local
     fun bindProfileLocalDataSource(dataSource: ProfileLocalDataSource): ProfileDataSource
 
+    @Binds
+    @Local
+    fun bindPoiLocalDataSource(dataSource: PoiLocalDataSource): PoiDataSource
 }

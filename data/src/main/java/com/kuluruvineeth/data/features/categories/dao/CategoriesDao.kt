@@ -18,6 +18,9 @@ interface CategoriesDao {
     @Query(value = "SELECT * FROM table_categories WHERE type = :type")
     fun getCategories(type: String): Flow<List<CategoryEntity>>
 
+    @Query(value = "SELECT * FROM table_categories WHERE id IN (:idList)")
+    fun getCategories(idList: List<Int>): Flow<List<CategoryEntity>>
+
     @Query(value = "SELECT * FROM table_categories WHERE id = :categoryId")
     suspend fun getCategory(categoryId: Int): CategoryEntity
 

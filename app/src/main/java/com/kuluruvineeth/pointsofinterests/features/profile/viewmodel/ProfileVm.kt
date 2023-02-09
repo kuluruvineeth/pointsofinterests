@@ -26,7 +26,7 @@ class ProfileVm @Inject constructor(
 ) : ViewModel(){
 
     val profileState = getProfileUseCase(Unit).map {
-        it.toProfileUiModels()
+        it!!.toProfileUiModels()
     }
         .stateIn(
             scope = viewModelScope,

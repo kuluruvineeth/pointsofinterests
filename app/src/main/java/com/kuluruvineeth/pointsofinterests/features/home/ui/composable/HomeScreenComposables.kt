@@ -191,13 +191,15 @@ fun PoiCard(
                         lineHeight = 18.sp
                     )
                     Spacer(modifier = Modifier.size(8.dp))
-                    Text(
-                        text = poiListItem.subtitle,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        maxLines = 4,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    if(poiListItem.subtitle != null){
+                        Text(
+                            text = poiListItem.subtitle,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            maxLines = 4,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     FlowRow(
@@ -251,7 +253,7 @@ fun PoiCard(
                     )
                     Spacer(modifier = Modifier.size(2.dp))
                     Text(
-                        text = poiListItem.notesCount.toString(),
+                        text = poiListItem.commentsCount.toString(),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onBackground.copy(
                             alpha = 0.5f

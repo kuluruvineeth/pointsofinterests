@@ -29,7 +29,7 @@ class CategoriesViewModel @Inject constructor(
     val detailedCategoriesUiState = MutableStateFlow<DetailedCategoriesUiState>(DetailedCategoriesUiState.Loading)
 
     val categoriesState = getCategoriesUseCase(Unit).map { list ->
-        list.map { it.toUiModel() }.groupBy { it.categoryType.toTitle() }
+        list!!.map { it.toUiModel() }.groupBy { it.categoryType.toTitle() }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -46,7 +46,7 @@ class CategoriesViewModel @Inject constructor(
                 return@launch
             }
             val selectedCategory = getCategoryUseCase(GetCategoryUseCase.Params(categoryId))
-            detailedCategoriesUiState.value = DetailedCategoriesUiState.Success(selectedCategory.toUiModel())
+            detailedCategoriesUiState.value = DetailedCategoriesUiState.Success(selectedCategory!!.toUiModel())
         }
     }
 

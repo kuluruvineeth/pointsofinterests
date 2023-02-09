@@ -89,4 +89,7 @@ dependencies {
     implementation "androidx.datastore:datastore:1.0.0"
     implementation  "com.google.protobuf:protobuf-kotlin-lite:3.21.9"
 
+    //Koltin datetime
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+
 }

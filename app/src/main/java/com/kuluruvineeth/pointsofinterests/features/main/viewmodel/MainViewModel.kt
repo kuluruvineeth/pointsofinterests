@@ -24,7 +24,7 @@ class MainViewModel @Inject constructor(
     val syncState = _syncState.asStateFlow()
 
     val mainScreenState = getUserSettingsUseCase(Unit)
-        .map { MainScreenState.Result(it) }
+        .map { MainScreenState.Result(it!!) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),

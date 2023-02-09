@@ -47,4 +47,7 @@ dependencies {
     //Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+
+    //Kotlin DateTime
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 }

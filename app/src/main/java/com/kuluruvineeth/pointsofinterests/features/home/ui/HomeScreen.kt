@@ -29,7 +29,7 @@ import com.kuluruvineeth.pointsofinterests.features.home.ui.composable.PoiCard
 import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.CategoryUiModel
 import com.kuluruvineeth.pointsofinterests.features.home.ui.composable.AddMoreButton
 import com.kuluruvineeth.pointsofinterests.features.home.ui.models.PoiListItem
-import com.kuluruvineeth.pointsofinterests.features.home.ui.models.PoiSortByOption
+import com.kuluruvineeth.pointsofinterests.features.home.ui.models.PoiSortByUiOption
 import com.kuluruvineeth.pointsofinterests.features.home.ui.models.toTitle
 import com.kuluruvineeth.pointsofinterests.navigation.Screen
 import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.ActionButton
@@ -54,7 +54,7 @@ fun HomeScreen(
         mutableStateOf<List<String>>(emptyList())
     }
     var selectedSortByOption by remember {
-        mutableStateOf(PoiSortByOption.NONE)
+        mutableStateOf(PoiSortByUiOption.NONE)
     }
 
     LaunchedEffect(key1 = searchState.value){
@@ -130,7 +130,7 @@ fun HomeScreen(
                                     text = stringResource(id = R.string.title_dialog_sort_by),
                                     style = MaterialTheme.typography.titleMedium
                                 )
-                                PoiSortByOption.values().filter{it != PoiSortByOption.NONE}.forEach{option ->
+                                PoiSortByUiOption.values().filter{it != PoiSortByUiOption.NONE}.forEach{option ->
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -177,7 +177,7 @@ fun HomeScreen(
                                             homeViewModel.onApplySortBy(selectedSortByOption)
                                             onCloseSortDialog()
                                         },
-                                        enabled = selectedSortByOption != PoiSortByOption.NONE
+                                        enabled = selectedSortByOption != PoiSortByUiOption.NONE
                                     )
                                 }
                             }

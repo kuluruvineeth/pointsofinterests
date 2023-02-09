@@ -96,4 +96,7 @@ dependencies {
 
     //Browser
     implementation "androidx.browser:browser:1.4.0"
+
+    //Kotlin datetime
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 }
