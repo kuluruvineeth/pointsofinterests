@@ -22,6 +22,7 @@ import coil.compose.SubcomposeAsyncImage
 import com.google.accompanist.flowlayout.FlowRow
 import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.PulsingProgressBar
 import com.kuluruvineeth.pointsofinterests.R
+import com.kuluruvineeth.pointsofinterests.core.utils.ErrorDisplayObject
 import com.kuluruvineeth.pointsofinterests.features.poi.create.models.WizardSuggestionUiModel
 import com.kuluruvineeth.pointsofinterests.features.poi.create.viewmodel.WizardSuggestionUiState
 import com.kuluruvineeth.pointsofinterests.ui.theme.PointsOfInterestTheme
@@ -37,7 +38,7 @@ fun WizardSuggestionStateCard(
     ) {state ->
         when(state){
             is WizardSuggestionUiState.Loading -> WizardSuggestionLoading()
-            is WizardSuggestionUiState.Error -> WizardSuggestionError(message = state.message)
+            is WizardSuggestionUiState.Error -> WizardSuggestionError(displayObject = state.displayObject)
             is WizardSuggestionUiState.Success -> WizardSuggestionContentPreview(
                 suggestion = state.wizardSuggestionUiModel
             )
@@ -70,7 +71,7 @@ fun WizardSuggestionLoading() {
 }
 
 @Composable
-fun WizardSuggestionError(message: String) {
+fun WizardSuggestionError(displayObject: ErrorDisplayObject) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -97,7 +98,7 @@ fun WizardSuggestionError(message: String) {
                 maxLines = 1
             )
             Text(
-                text = message,
+                text = stringResource(id = displayObject.errorMessage),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onError
             )
@@ -125,7 +126,44 @@ fun WizardSuggestionContentPreview(
         )
     ) {
 
-        if(suggestion.isSingleImageSuggestion()){
+        if (suggestion.isEmpty()) {
+
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Icon(
+                    modifier = Modifier
+                        .size(64.dp),
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_empty),
+                    contentDescription = "",
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+                Spacer(modifier = Modifier.size(16.dp))
+
+                Column {
+                    Text(
+                        text = stringResource(id = R.string.title_wizard_suggestion_not_available),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = 18.sp
+                    )
+                    Spacer(modifier = Modifier.size(8.dp))
+                    Text(
+                        text = stringResource(id = R.string.subtitle_wizard_suggestion_not_available),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        maxLines = 4,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+
+        } else if (suggestion.isSingleImageSuggestion()) {
+
             SubcomposeAsyncImage(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -133,31 +171,47 @@ fun WizardSuggestionContentPreview(
                     .clip(RoundedCornerShape(8.dp)),
                 model = suggestion.imageUrl,
                 contentScale = ContentScale.Crop,
-                contentDescription = "",
-                loading = { PulsingProgressBar()}
+                contentDescription = "Wizard suggestion image preview",
+                loading = { PulsingProgressBar() },
+                error = {
+                    Icon(
+                        modifier = Modifier.size(64.dp),
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_image_loading_failed),
+                        contentDescription = "Wizard suggestion image preview - error",
+                        tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
+                    )
+                }
             )
-        }else{
+
+        } else {
+
             Column {
                 Row(
                     modifier = Modifier.padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if(suggestion.imageUrl.isNullOrEmpty().not()){
+                    if (suggestion.imageUrl.isNullOrEmpty().not()) {
                         SubcomposeAsyncImage(
                             modifier = Modifier
                                 .size(112.dp)
-                                .clip(
-                                    RoundedCornerShape(8.dp)
-                                ),
+                                .clip(RoundedCornerShape(8.dp)),
                             model = suggestion.imageUrl,
                             contentScale = ContentScale.Crop,
-                            contentDescription = "",
-                            loading = { PulsingProgressBar()}
+                            contentDescription = "Wizard suggestion image preview",
+                            loading = { PulsingProgressBar() },
+                            error = {
+                                Icon(
+                                    modifier = Modifier.size(32.dp),
+                                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_image_loading_failed),
+                                    contentDescription = "Wizard suggestion image preview - error",
+                                    tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
+                                )
+                            }
                         )
-                        Spacer(modifier = Modifier.size(8.dp))
+                        Spacer(modifier = Modifier.size(16.dp))
                     }
                     Column {
-                        if(suggestion.title != null){
+                        if (suggestion.title != null) {
                             Text(
                                 text = requireNotNull(suggestion.title),
                                 style = MaterialTheme.typography.titleSmall,
@@ -168,7 +222,7 @@ fun WizardSuggestionContentPreview(
                             )
                         }
                         Spacer(modifier = Modifier.size(8.dp))
-                        if(suggestion.body != null)
+                        if (suggestion.body != null)
                             Text(
                                 text = suggestion.body,
                                 style = MaterialTheme.typography.bodySmall,
@@ -178,13 +232,12 @@ fun WizardSuggestionContentPreview(
                             )
 
                         Spacer(modifier = Modifier.height(16.dp))
-                        if(suggestion.tags != null){
-                            FlowRow(
-                                mainAxisSpacing = 4.dp,
-                                crossAxisSpacing = 2.dp
-                            ) {
+                        if (suggestion.tags != null) {
+
+                            FlowRow(mainAxisSpacing = 4.dp, crossAxisSpacing = 2.dp) {
                                 suggestion.tags.forEach { tag ->
                                     Text(
+
                                         text = "# $tag",
                                         style = MaterialTheme.typography.labelMedium,
                                         color = MaterialTheme.colorScheme.onBackground
@@ -203,7 +256,7 @@ fun WizardSuggestionContentPreview(
 @Composable
 fun WizardSuggestionStateCardPreview() {
     PointsOfInterestTheme() {
-        WizardSuggestionError(message = "Network failed")
+        WizardSuggestionError(displayObject = ErrorDisplayObject.GenericError)
 
         Spacer(modifier = Modifier.size(16.dp))
 

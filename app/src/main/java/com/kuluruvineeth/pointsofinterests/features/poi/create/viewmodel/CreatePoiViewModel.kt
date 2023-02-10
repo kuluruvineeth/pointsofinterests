@@ -8,6 +8,8 @@ import androidx.navigation.NavController
 import com.kuluruvineeth.domain.features.categories.interactor.GetCategoriesUseCase
 import com.kuluruvineeth.domain.features.poi.interactor.CreatePoiUseCase
 import com.kuluruvineeth.domain.features.poi.interactor.GetWizardSuggestionUseCase
+import com.kuluruvineeth.pointsofinterests.core.utils.ErrorDisplayObject
+import com.kuluruvineeth.pointsofinterests.core.utils.toDisplayObject
 import com.kuluruvineeth.pointsofinterests.features.poi.create.models.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -38,10 +40,9 @@ class CreatePoiViewModel @Inject constructor(
                 send(getWizardSuggestionUseCase(GetWizardSuggestionUseCase.Params(url)))
             }.onStart {
                 wizardSuggestionState.value = WizardSuggestionUiState.Loading
+            }.catch { wizardSuggestionState.value =
+                WizardSuggestionUiState.Error(it.toDisplayObject())
             }
-        }
-        .catch { wizardSuggestionState.value =
-            WizardSuggestionUiState.Error(it.message ?: "")
         }.onEach {
             wizardSuggestionState.value =
                 WizardSuggestionUiState.Success(it!!.toUiModel())
@@ -72,7 +73,9 @@ class CreatePoiViewModel @Inject constructor(
             )
 
     fun onApplyWizardSuggestion(){
-
+        (wizardSuggestionState.value as? WizardSuggestionUiState.Success)?.wizardSuggestionUiModel?.let { suggestionModel ->
+            screenState.value = CreatePoiScreenState.Form(suggestionModel)
+        }
     }
 
     fun onSkip(){
@@ -109,5 +112,5 @@ sealed class WizardSuggestionUiState{
     data class Success(val wizardSuggestionUiModel: WizardSuggestionUiModel) : WizardSuggestionUiState()
     object Loading : WizardSuggestionUiState()
     object None : WizardSuggestionUiState()
-    data class Error(val message: String) : WizardSuggestionUiState()
+    data class Error(val displayObject: ErrorDisplayObject) : WizardSuggestionUiState()
 }

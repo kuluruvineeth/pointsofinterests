@@ -47,7 +47,7 @@ import com.kuluruvineeth.pointsofinterests.features.poi.create.viewmodel.CreateP
 import com.kuluruvineeth.pointsofinterests.features.poi.create.viewmodel.WizardSuggestionUiState
 import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.ActionButton
 import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.CrossSlide
-
+import kotlinx.coroutines.flow.collect
 
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalLifecycleComposeApi::class)
@@ -57,8 +57,12 @@ fun CreatePoiScreen(
     viewModel: CreatePoiViewModel = hiltViewModel()
 ) {
 
+    LaunchedEffect(key1 = true){
+        viewModel.sharedContentState.collect()
+    }
+
     val screenState = viewModel.screenState.collectAsStateWithLifecycle()
-    viewModel.sharedContentState.collectAsStateWithLifecycle()
+
 
     val focusRequester = remember {
         FocusRequester()
@@ -66,21 +70,23 @@ fun CreatePoiScreen(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    CrossSlide(targetState = screenState.value){state ->
-        when(state){
-            is CreatePoiScreenState.Wizard -> CreatePoiWizardScreen(
-                sharedContent = state.sharedContent.content,
-                viewModel = viewModel,
-                focusRequester = focusRequester,
-                keyboardController = keyboardController
-            )
-            is CreatePoiScreenState.Form -> CreatePoiFormScreen(
-                wizardSuggestionUiModel = state.suggestion,
-                viewModel = viewModel,
-                focusRequester = focusRequester,
-                keyboardController = keyboardController
-            )
-            else -> ProgressView()
+    if(screenState.value !is CreatePoiScreenState.Loading){
+        CrossSlide(targetState = screenState.value) {state ->
+            if(state is CreatePoiScreenState.Wizard){
+                CreatePoiWizardScreen(
+                    sharedContent = state.sharedContent.content,
+                    viewModel = viewModel,
+                    focusRequester = focusRequester,
+                    keyboardController = keyboardController
+                )
+            }else if(state is CreatePoiScreenState.Form){
+                CreatePoiFormScreen(
+                    wizardSuggestionUiModel = state.suggestion,
+                    viewModel = viewModel,
+                    focusRequester = focusRequester,
+                    keyboardController = keyboardController
+                )
+            }
         }
     }
 }
@@ -95,12 +101,22 @@ fun CreatePoiWizardScreen(
     focusRequester: FocusRequester,
     keyboardController: SoftwareKeyboardController?
 ) {
+
+    LaunchedEffect(key1 = true){
+        viewModel.searchState.collect()
+    }
+
     var wizardTextState by remember {
         mutableStateOf(TextFieldValue(sharedContent ?: ""))
     }
     val wizardSuggestionUiState by viewModel.wizardSuggestionState.collectAsStateWithLifecycle()
-    viewModel.searchState.collectAsStateWithLifecycle()
     val urlValidator = rememberUrlValidator()
+
+    LaunchedEffect(key1 = sharedContent){
+        if(sharedContent != null && urlValidator.validate(sharedContent)){
+            viewModel.onFetchWizardSuggestion(sharedContent)
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -152,7 +168,11 @@ fun CreatePoiWizardScreen(
                 trailingIcon = {
                     if(wizardTextState.text.isNotEmpty()){
                         IconButton(
-                            onClick = { wizardTextState = TextFieldValue("") }
+                            onClick = {
+                                wizardTextState = TextFieldValue("")
+                                urlValidator.validate(wizardTextState.text)
+                                viewModel.onFetchWizardSuggestion(wizardTextState.text)
+                            }
                         ) {
                             Icon(
                                 modifier = Modifier
