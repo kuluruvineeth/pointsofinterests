@@ -17,7 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
 import javax.inject.Singleton
 
-@Module
+@Module(includes = [InterceptorsModule::class])
 @InstallIn(SingletonComponent::class)
 class NetworkModule {
 
@@ -35,15 +35,7 @@ class NetworkModule {
         GsonConverterFactory.create(gson)
 
     @Provides
-    @Interceptors
-    fun provideInterceptors(): List<Interceptor> =
-        arrayListOf(HttpLoggingInterceptor())
-
-    @Provides
-    @NetworkInterceptors
-    fun provideNetworkInterceptors(): List<Interceptor> = emptyList()
-
-    @Provides
+    @Singleton
     fun okHttpClient(
         cacheFolder: File,
         @Interceptors interceptors: List<Interceptor>,
@@ -61,4 +53,20 @@ class NetworkModule {
         converterFactory: Converter.Factory,
         @ServerUrl baseUrl: String
     ): Retrofit = RetrofitFactory.create(okHttpClient, converterFactory,baseUrl)
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object InterceptorsModule{
+    @Provides
+    @Interceptors
+    @Singleton
+    fun provideInterceptors(): List<@JvmWildcard Interceptor> =
+        arrayListOf(HttpLoggingInterceptor())
+
+    @Provides
+    @NetworkInterceptors
+    @Singleton
+    fun provideNetworkInterceptors(): List<@JvmWildcard Interceptor> =
+        emptyList()
 }

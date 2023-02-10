@@ -1,5 +1,6 @@
 package com.kuluruvineeth.pointsofinterests.features.main
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -27,6 +28,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.AppBar
@@ -49,6 +51,7 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
 
     private val mainViewModel by viewModels<MainViewModel>()
+    private var navHostController: NavHostController? = null
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,10 +77,18 @@ class MainActivity : ComponentActivity() {
                 useSystemTheme = mainState.userSettings()?.isUseSystemTheme ?: true,
                 darkTheme = mainState.userSettings()?.isDarkMode ?: true
             ) {
-                // A surface container using the 'background' color from the theme
-                PoiMainScreen()
+                navHostController = rememberNavController()
+                val appState = rememberPoiAppState(
+                    navHostController = requireNotNull(navHostController)
+                )
+                PoiMainScreen(appState)
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        navHostController?.handleDeepLink(intent)
     }
 
     private fun MainScreenState.userSettings() = if(this is MainScreenState.Result) userSettings else null

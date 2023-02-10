@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -20,7 +21,8 @@ fun ActionButton(
     onClick: () -> Unit,
     enabled: Boolean = true,
     paddingVertical: Dp = 16.dp,
-    paddingHorizontal: Dp = 24.dp
+    paddingHorizontal: Dp = 24.dp,
+    fontSize: TextUnit = 14.sp
 ) {
     val textColor = if(enabled) MaterialTheme.colorScheme.secondary
         else MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
@@ -46,7 +48,7 @@ fun ActionButton(
             text = text.uppercase(),
             color = textColor,
             style = MaterialTheme.typography.titleSmall,
-            fontSize = 14.sp
+            fontSize = fontSize
         )
     }
 }

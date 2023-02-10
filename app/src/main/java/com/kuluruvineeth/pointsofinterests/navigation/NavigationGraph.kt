@@ -1,5 +1,6 @@
 package com.kuluruvineeth.pointsofinterests.navigation
 
+import android.content.Intent
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -8,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import com.kuluruvineeth.pointsofinterests.features.about.AboutScreen
 import com.kuluruvineeth.pointsofinterests.features.categories.categoriesGraph
 import com.kuluruvineeth.pointsofinterests.features.categories.ui.CategoriesScreen
@@ -42,7 +44,19 @@ fun Navigation(
         composable(Screen.About.route){
             AboutScreen()
         }
-        composable(Screen.CreatePoi.route){
+        composable(
+            Screen.CreatePoi.route,
+            deepLinks = listOf(
+                navDeepLink {
+                    action = Intent.ACTION_SEND
+                    mimeType = "text/*"
+                },
+                navDeepLink {
+                    action = Intent.ACTION_SEND
+                    mimeType = "image/*"
+                }
+            )
+        ){
             CreatePoiScreen(navHostController = appState.navHostController)
         }
     }

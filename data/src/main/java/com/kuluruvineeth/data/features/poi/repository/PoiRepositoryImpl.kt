@@ -1,7 +1,11 @@
 package com.kuluruvineeth.data.features.poi.repository
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.kuluruvineeth.data.core.Local
+import com.kuluruvineeth.data.features.poi.datasource.LocalImageDataSource
 import com.kuluruvineeth.data.features.poi.datasource.PoiDataSource
+import com.kuluruvineeth.data.features.poi.datasource.WizardRemoteDataSource
 import com.kuluruvineeth.data.features.poi.model.creationDataModel
 import com.kuluruvineeth.data.features.poi.model.toDomain
 import com.kuluruvineeth.data.features.poi.model.toOrderBy
@@ -12,7 +16,9 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class PoiRepositoryImpl @Inject constructor(
-    @Local private val localDataSource: PoiDataSource
+    @Local private val localDataSource: PoiDataSource,
+    private val imageDataSource: LocalImageDataSource,
+    private val wizardRemoteDataSource: WizardRemoteDataSource
 ) : PoiRepository{
     override fun getPoiList(sortOption: PoiSortOption?): Flow<List<PoiModel?>> =
         localDataSource.getPoiList((sortOption ?: PoiSortOption.DATE).toOrderBy())
@@ -25,8 +31,17 @@ class PoiRepositoryImpl @Inject constructor(
     override suspend fun getDetailedPoi(id: String): PoiModel? =
         localDataSource.getPoi(id).toDomain()
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override suspend fun createPoi(payload: PoiCreationPayload) {
-        localDataSource.insertPoi(payload.creationDataModel())
+        val finalPayload: PoiCreationPayload = if
+                (payload.imageUrl?.startsWith(CONTENT_URI_PREFIX) == true){
+            val internalImageUri =
+                imageDataSource.copyLocalImage(requireNotNull(payload.imageUrl))
+                payload.copy(imageUrl = internalImageUri)
+        }else{
+            payload
+        }
+        localDataSource.insertPoi(finalPayload.creationDataModel())
     }
 
     override suspend fun deletePoi(id: String) {
@@ -47,8 +62,11 @@ class PoiRepositoryImpl @Inject constructor(
         localDataSource.deleteComment(id)
     }
 
-    override suspend fun getWizardSuggestion(contentUrl: String): WizardSuggestion {
-        TODO("Not yet implemented")
+    override suspend fun getWizardSuggestion(contentUrl: String): WizardSuggestion =
+        wizardRemoteDataSource.getWizardSuggestion(contentUrl).toDomain()
+
+    companion object{
+        private const val CONTENT_URI_PREFIX = "content://"
     }
 
 }
