@@ -44,6 +44,7 @@ import com.kuluruvineeth.pointsofinterests.ui.theme.PointsOfInterestTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMoreButton(
+    text: String? = null,
     onClick: () -> Unit
 ) {
     AssistChip(
@@ -56,7 +57,7 @@ fun AddMoreButton(
         onClick = {onClick()},
         label = {
             Text(
-                text = stringResource(id = R.string.add_more),
+                text = text ?: stringResource(id = R.string.add_more),
                 fontSize = 12.sp,
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Medium

@@ -1,15 +1,18 @@
 package com.kuluruvineeth.pointsofinterests.features.poi.create
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Surface
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,6 +22,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -37,28 +41,40 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.google.accompanist.flowlayout.FlowRow
 import com.kuluruvineeth.pointsofinterests.core.validator.rememberUrlValidator
 import com.kuluruvineeth.pointsofinterests.ui.composables.uistates.ProgressView
 import com.kuluruvineeth.pointsofinterests.R
+import com.kuluruvineeth.pointsofinterests.features.categories.ui.composable.CategoryTypeHeader
+import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.CategoryUiModel
+import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.toTitle
+import com.kuluruvineeth.pointsofinterests.features.home.ui.composable.AddMoreButton
+import com.kuluruvineeth.pointsofinterests.features.home.ui.composable.CategoryFilterChips
+import com.kuluruvineeth.pointsofinterests.features.poi.create.models.FormImageState
 import com.kuluruvineeth.pointsofinterests.features.poi.create.models.WizardSuggestionUiModel
+import com.kuluruvineeth.pointsofinterests.features.poi.create.ui.composable.ImageContentStateCard
 import com.kuluruvineeth.pointsofinterests.features.poi.create.ui.composable.WizardSuggestionStateCard
 import com.kuluruvineeth.pointsofinterests.features.poi.create.viewmodel.CreatePoiScreenState
 import com.kuluruvineeth.pointsofinterests.features.poi.create.viewmodel.CreatePoiViewModel
 import com.kuluruvineeth.pointsofinterests.features.poi.create.viewmodel.WizardSuggestionUiState
 import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.ActionButton
 import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.CrossSlide
+import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.PoiOutlineTextField
+import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.PrimaryButton
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalLifecycleComposeApi::class)
 @Composable
 fun CreatePoiScreen(
-    navHostController: NavHostController,
+    onCloseScreen: () -> Unit,
     viewModel: CreatePoiViewModel = hiltViewModel()
 ) {
+    val finishScreenState = viewModel.finishScreen.collectAsStateWithLifecycle()
 
-    LaunchedEffect(key1 = true){
-        viewModel.sharedContentState.collect()
+    if(finishScreenState.value){
+        onCloseScreen()
     }
 
     val screenState = viewModel.screenState.collectAsStateWithLifecycle()
@@ -102,10 +118,6 @@ fun CreatePoiWizardScreen(
     keyboardController: SoftwareKeyboardController?
 ) {
 
-    LaunchedEffect(key1 = true){
-        viewModel.searchState.collect()
-    }
-
     var wizardTextState by remember {
         mutableStateOf(TextFieldValue(sharedContent ?: ""))
     }
@@ -143,80 +155,20 @@ fun CreatePoiWizardScreen(
                     .height(8.dp)
             )
 
-            androidx.compose.material3.OutlinedTextField(
-                value = wizardTextState,
-                onValueChange = {value ->
-                    wizardTextState = value
-                    if(urlValidator.validate(value.text)){
-                        viewModel.onFetchWizardSuggestion(value.text)
-                    }
-                },
-                isError = urlValidator.isValid.not(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .focusRequester(focusRequester),
-                textStyle = MaterialTheme.typography.bodyLarge,
-                leadingIcon = {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_insert_link),
-                        contentDescription = "",
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
-                },
-                trailingIcon = {
-                    if(wizardTextState.text.isNotEmpty()){
-                        IconButton(
-                            onClick = {
-                                wizardTextState = TextFieldValue("")
-                                urlValidator.validate(wizardTextState.text)
-                                viewModel.onFetchWizardSuggestion(wizardTextState.text)
-                            }
-                        ) {
-                            Icon(
-                                modifier = Modifier
-                                    .size(20.dp)
-                                    .background(
-                                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f),
-                                        shape = CircleShape
-                                    ),
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = "",
-                                tint = MaterialTheme.colorScheme.background
-                            )
-                        }
-                    }
-                },
-                singleLine = true,
-                maxLines = 1,
-                shape = RoundedCornerShape(8.dp),
-                label = { Text(text = stringResource(id = R.string.title_wizard_link_title))},
-                placeholder = {
-                    Text(
-                        text = stringResource(id = R.string.title_wizard_link_hint),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onBackground.copy(
-                            alpha = 0.2f
-                        )
-                    )
-                },
-                supportingText = {
-                    if(urlValidator.isValid.not()){
-                        Text(
-                            text = urlValidator.getErrorMessage(),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-                },
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done,
-                    capitalization = KeyboardCapitalization.None
-                ),
+            PoiOutlineTextField(
+                modifier = Modifier.padding(16.dp),
+                textFieldValue = wizardTextState,
+                onValueChanged = { value -> wizardTextState = value },
+                onValidValue = { viewModel.onFetchWizardSuggestion(it.text) },
+                validator = urlValidator,
+                focusRequester = focusRequester,
+                leadingIconRes = R.drawable.ic_insert_link,
+                labelTextRes = R.string.title_wizard_link_title,
+                placeholderTextRes = R.string.title_wizard_link_hint,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, capitalization = KeyboardCapitalization.None),
                 keyboardActions = KeyboardActions(onDone = {
                     keyboardController?.hide()
-                    if(urlValidator.validate(wizardTextState.text)){
+                    if (urlValidator.validate(wizardTextState.text)) {
                         viewModel.onFetchWizardSuggestion(wizardTextState.text)
                     }
                 })
@@ -248,13 +200,225 @@ fun CreatePoiWizardScreen(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun CreatePoiFormScreen(
     wizardSuggestionUiModel: WizardSuggestionUiModel,
     viewModel: CreatePoiViewModel,
     focusRequester: FocusRequester,
-    keyboardController: SoftwareKeyboardController?
+    keyboardController: SoftwareKeyboardController?,
 ) {
 
+    val coroutineScope = rememberCoroutineScope()
+    val bottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+
+    var contentUrlTextState by remember { mutableStateOf(TextFieldValue(wizardSuggestionUiModel.url ?: "")) }
+    var titleTextState by remember { mutableStateOf(TextFieldValue(wizardSuggestionUiModel.title ?: "")) }
+    var bodyTextState by remember { mutableStateOf(TextFieldValue(wizardSuggestionUiModel.body ?: "")) }
+    var imageState by remember {
+        mutableStateOf(
+            FormImageState(imagePath = wizardSuggestionUiModel.imageUrl, isFailedImage = false)
+        )
+    }
+    val categoriesListState = remember { mutableStateListOf<CategoryUiModel>() }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            uri?.toString()?.let { nonNullUri ->
+                imageState = imageState.copy(imagePath = nonNullUri, isFailedImage = false)
+            }
+        }
+    )
+
+    ModalBottomSheetLayout(
+        modifier = Modifier.fillMaxSize(),
+        sheetState = bottomSheetState,
+        sheetShape = RoundedCornerShape(topStart = 48.dp, topEnd = 48.dp),
+        sheetBackgroundColor = MaterialTheme.colorScheme.background,
+        sheetElevation = 16.dp,
+        scrimColor = MaterialTheme.colorScheme.background.copy(alpha = 0f),
+        sheetContent = {
+            CategoriesSelectionBottomSheet(
+                viewModel = viewModel,
+                selectedCategories = categoriesListState,
+                onCategorySelected = { categoriesListState.add(it) },
+                onCategoryUnselected = { categoriesListState.remove(it) }
+            )
+        }) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .background(MaterialTheme.colorScheme.background)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Top,
+            ) {
+
+                PoiOutlineTextField(
+                    modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 8.dp),
+                    textFieldValue = contentUrlTextState,
+                    onValueChanged = { value -> contentUrlTextState = value },
+                    onValidValue = { },
+                    validator = null,
+                    focusRequester = focusRequester,
+                    labelTextRes = R.string.title_wizard_link_title,
+                    placeholderTextRes = R.string.title_wizard_link_hint,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, capitalization = KeyboardCapitalization.None)
+                )
+
+                ImageContentStateCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 8.dp),
+                    imageState = imageState,
+                    focusRequester = focusRequester,
+                    keyboardController = keyboardController,
+                    onImageSelected = { path -> imageState = imageState.copy(imagePath = path, isFailedImage = false) },
+                    onDeleteImage = { imageState = imageState.copy(imagePath = null, isFailedImage = false) },
+                    onImageFailedToDownload = { imageState = imageState.copy(isFailedImage = true) },
+                    onPickLocalImage = {
+                        imagePickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    }
+                )
+
+                val addCategoryTitle = if (categoriesListState.size == 0) stringResource(id = R.string.button_add_categories)
+                else stringResource(id = R.string.add_more)
+
+                FlowRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 8.dp),
+                    mainAxisSpacing = 8.dp,
+                    crossAxisSpacing = 2.dp
+                ) {
+                    categoriesListState.forEach { model -> CategoryFilterChips(model) }
+                    AddMoreButton(text = addCategoryTitle) {
+                        coroutineScope.launch { bottomSheetState.show() }
+                    }
+                }
+
+                PoiOutlineTextField(
+                    modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 8.dp),
+                    textFieldValue = titleTextState,
+                    onValueChanged = { value -> titleTextState = value },
+                    onValidValue = { },
+                    validator = null,
+                    maxLines = 3,
+                    focusRequester = focusRequester,
+                    labelTextRes = R.string.title_form_title
+                )
+
+                PoiOutlineTextField(
+                    modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 8.dp),
+                    textFieldValue = bodyTextState,
+                    onValueChanged = { value -> bodyTextState = value },
+                    onValidValue = { },
+                    validator = null,
+                    maxLines = 10,
+                    focusRequester = focusRequester,
+                    labelTextRes = R.string.title_form_body
+                )
+            }
+
+            val isSaveEnabled = titleTextState.text.isNotEmpty()
+                    && categoriesListState.isNotEmpty()
+                    && (bodyTextState.text.isNotEmpty()
+                    || contentUrlTextState.text.isNotEmpty()
+                    || (imageState.imagePath.isNullOrEmpty().not() && imageState.isFailedImage.not()))
+
+            androidx.compose.material3.Surface(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background),
+                shadowElevation = 8.dp
+            ) {
+                PrimaryButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    text = stringResource(id = R.string.button_save),
+                    enabled = isSaveEnabled,
+                    onClick = {
+                        viewModel.onSave(
+                            contentUrl = contentUrlTextState.text,
+                            title = titleTextState.text,
+                            body = bodyTextState.text,
+                            imageState = imageState,
+                            categories = categoriesListState
+                        )
+                    }
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalLifecycleComposeApi::class)
+@Composable
+fun CategoriesSelectionBottomSheet(
+    viewModel: CreatePoiViewModel,
+    selectedCategories: List<CategoryUiModel>,
+    onCategorySelected: (CategoryUiModel) -> Unit,
+    onCategoryUnselected: (CategoryUiModel) -> Unit
+) {
+    val categoriesState by viewModel.categoriesState.collectAsStateWithLifecycle()
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .background(
+                color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f),
+                shape = RoundedCornerShape(topStart = 48.dp, topEnd = 48.dp)
+            )
+            .clip(RoundedCornerShape(topStart = 48.dp, topEnd = 48.dp))
+    ) {
+        Column(
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .width(32.dp)
+                    .height(8.dp)
+                    .background(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp))
+            )
+            LazyColumn {
+                categoriesState.entries.forEach { entry ->
+                    item(entry.key) {
+                        CategoryTypeHeader(type = stringResource(id = entry.key.toTitle()))
+                    }
+                    item("group${entry.key}") {
+                        FlowRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 8.dp),
+                            mainAxisSpacing = 8.dp,
+                            crossAxisSpacing = 2.dp
+                        ) {
+                            entry.value.forEach { model ->
+                                CategoryFilterChips(
+                                    categoryListItem = model,
+                                    isSelected = model in selectedCategories,
+                                    onClick = {
+                                        if (model !in selectedCategories) {
+                                            onCategorySelected(model)
+                                        } else {
+                                            onCategoryUnselected(model)
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+
+    }
 }

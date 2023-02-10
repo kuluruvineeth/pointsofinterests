@@ -8,12 +8,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 
 @Composable
 fun OutlineButton(
+    modifier: Modifier = Modifier,
     text: String,
     onClick: () -> Unit,
     enabled: Boolean = true,
@@ -26,6 +28,7 @@ fun OutlineButton(
         MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
 
     OutlinedButton(
+        modifier = modifier,
         contentPadding = PaddingValues(
             horizontal = paddingsHorizontal,
             vertical = paddingsVertical

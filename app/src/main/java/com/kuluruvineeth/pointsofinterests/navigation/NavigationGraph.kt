@@ -57,7 +57,7 @@ fun Navigation(
                 }
             )
         ){
-            CreatePoiScreen(navHostController = appState.navHostController)
+            CreatePoiScreen(onCloseScreen = appState::onBackClick)
         }
     }
 }
