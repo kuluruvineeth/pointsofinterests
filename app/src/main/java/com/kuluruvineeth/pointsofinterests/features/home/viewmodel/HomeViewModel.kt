@@ -1,6 +1,7 @@
 package com.kuluruvineeth.pointsofinterests.features.home.viewmodel
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
@@ -25,7 +26,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     getUsedCategoriesUseCase: GetUsedCategoriesUseCase,
     private val getCategoriesUseCase: GetCategoriesByIdsUseCase,
-    private val getPoiListUseCase: GetPoiListUseCase
+    getPoiListUseCase: GetPoiListUseCase
 ) : ViewModel(){
 
     val categoriesState = getUsedCategoriesUseCase(Unit).flatMapConcat{ids ->
@@ -41,18 +42,15 @@ class HomeViewModel @Inject constructor(
 
 
     @RequiresApi(Build.VERSION_CODES.O)
-    val homeUiContentState = retryableFlow(retryTrigger){
-        getPoiListUseCase(null)
-            .map { list -> list!!.map { it!!.toListUiModel() } }
-            .map {
-                if(it.isEmpty()) HomeUiContentState.Empty
-                else HomeUiContentState.Result(it)
-            }
-            .catch{
-                emit(HomeUiContentState.Error(it.message ?: "null"))
-            }
-            .onStart{emit(HomeUiContentState.Loading)}
-    }
+    val homeUiContentState = getPoiListUseCase(null)
+        .onEach { Log.d("AAA","Updated") }
+        .map { list -> list!!.map { it!!.toListUiModel() } }
+        .map {
+            if(it.isEmpty()) HomeUiContentState.Empty
+            else HomeUiContentState.Result(it)
+        }
+        .catch { emit(HomeUiContentState.Error(it.message ?: "null")) }
+        .onStart { emit(HomeUiContentState.Loading) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
