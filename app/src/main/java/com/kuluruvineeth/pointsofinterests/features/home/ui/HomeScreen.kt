@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -67,7 +68,6 @@ fun HomeScreen(
 
     Column(
         modifier = Modifier
-            .padding(PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp))
             .background(MaterialTheme.colorScheme.background)
     ) {
         AnimatedVisibility(
@@ -85,7 +85,10 @@ fun HomeScreen(
                 else selectedFiltersState.add(filterId)
             }
         }
-        Box(modifier = Modifier.weight(1f)){
+        Box(
+            modifier = Modifier
+                .padding(PaddingValues(start = 16.dp, end = 16.dp))
+                .weight(1f)){
             when(homeContentState){
                 is HomeViewModel.HomeUiContentState.Loading -> ProgressView()
                 is HomeViewModel.HomeUiContentState.Empty -> EmptyView(
@@ -254,7 +257,8 @@ fun HomeScreenFilterContent(
 ) {
     Column {
         LazyRow{
-            items(categories, key = {item -> item.id}){item ->
+            itemsIndexed(categories, key = {_,item -> item.id}){index,item ->
+                if(index==0) Spacer(modifier = Modifier.width(16.dp))
                 CategoryFilterChips(
                     categoryListItem = item,
                     onClick = onClick,
@@ -268,6 +272,6 @@ fun HomeScreenFilterContent(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
