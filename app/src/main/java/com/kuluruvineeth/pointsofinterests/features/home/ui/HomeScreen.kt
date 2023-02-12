@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -49,7 +50,6 @@ import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.ActionButton
 @OptIn(ExperimentalAnimationApi::class, ExperimentalLifecycleComposeApi::class)
 @Composable
 fun HomeScreen(
-    navigationController : NavHostController,
     showSortDialogState: Boolean,
     onCloseSortDialog: () -> Unit,
     onNavigate: (Screen, List<Pair<String, Any>>) -> Unit,
@@ -76,7 +76,7 @@ fun HomeScreen(
             exit = fadeOut()
         ) {
             HomeScreenFilterContent(
-                navigationController,
+                onAddCategories = {onNavigate(Screen.Categories, emptyList())},
                 selectedFilters = selectedFiltersState,
                 categories = categoriesState
             ){filterId ->
@@ -237,15 +237,9 @@ fun HomeScreenContent(
 ) {
     Column {
         LazyColumn{
-            poiItems.forEachIndexed { index, interests ->
-                item(key = interests.hashCode()) {
-                    PoiCard(poiListItem = interests, onClick = onPoiSelected)
-                }
-                    if(index < poiItems.size - 1){
-                        item("divider$index"){
-                            Spacer(modifier = Modifier.height(8.dp))
-                        }
-                    }
+            items(poiItems, key = {item -> item.id}){item ->
+                PoiCard(poiListItem = item, onClick = onPoiSelected)
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
@@ -253,27 +247,25 @@ fun HomeScreenContent(
 
 @Composable
 fun HomeScreenFilterContent(
-    navigationController: NavHostController,
+    onAddCategories: () -> Unit,
     categories: List<CategoryUiModel>,
     selectedFilters: List<String>,
     onClick: (String) -> Unit
 ) {
     Column {
         LazyRow{
-            categories.forEach { category ->
-                item(key = category.hashCode()){
-                    CategoryFilterChips(
-                        categoryListItem = category,
-                        onClick = {onClick(category.id)},
-                        isSelected = category.id in selectedFilters
-                    )
-                }
-                item { Spacer(modifier = Modifier.width(8.dp)) }
+            items(categories, key = {item -> item.id}){item ->
+                CategoryFilterChips(
+                    categoryListItem = item,
+                    onClick = onClick,
+                    isSelected = item.id in selectedFilters
+                )
+                Spacer(modifier = Modifier.width(8.dp))
             }
-            item {
-                AddMoreButton{
-                    navigationController.navigate(Screen.Categories.route)
-                }
+            item(key = "AddMoreButton") {
+                AddMoreButton(
+                    onClick = onAddCategories
+                )
             }
         }
         Spacer(modifier = Modifier.height(16.dp))

@@ -37,15 +37,16 @@ fun Navigation(
     ){
         composable(Screen.Home.route){
             HomeScreen(
-                navigationController = appState.navHostController,
-                appState.showSortDialog,
-                {appState.showSortDialog = false},
-                {screen, args -> appState.navigateTo(screen,args)}
+                showSortDialogState = appState.showSortDialog,
+                onCloseSortDialog = {appState.showSortDialog = false},
+                onNavigate = {screen, args -> appState.navigateTo(screen,args)}
             )
         }
         categoriesGraph(appState)
         composable(Screen.Profile.route){
-            ProfileScreen(navHostController = appState.navHostController)
+            ProfileScreen{
+                appState.navigateTo(it)
+            }
         }
         composable(Screen.About.route){
             AboutScreen()

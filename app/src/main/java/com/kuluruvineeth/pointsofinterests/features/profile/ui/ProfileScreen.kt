@@ -15,6 +15,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -51,8 +52,8 @@ import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.PulsingProgressB
 
 @Composable
 fun ProfileScreen(
-    navHostController: NavHostController,
-    vm: ProfileVm = hiltViewModel()
+    vm: ProfileVm = hiltViewModel(),
+    onNavigate: (Screen) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -69,12 +70,12 @@ fun ProfileScreen(
 
     val profileSectionsState by vm.profileState.collectAsState()
 
-    val onNavigate: (ProfileSectionType) -> Unit = {type ->
+    val onNavigateInternal: (ProfileSectionType) -> Unit = {type ->
         if(type == ProfileSectionType.CATEGORIES){
-            navHostController.navigate(Screen.Categories.route)
+            onNavigate(Screen.Categories)
         }
         if(type == ProfileSectionType.ABOUT){
-            navHostController.navigate(Screen.About.route)
+            onNavigate(Screen.About)
         }
     }
 
@@ -88,35 +89,21 @@ fun ProfileScreen(
     }
 
     LazyColumn{
-        profileSectionsState.forEach { section ->
-            item(section.type){
-                if(section is ProfileSectionItem.AccountSectionItem){
-                    AccountSection(
-                        userInfo = section.userInfo,
-                        onSignInClicked,
-                        onSignOutClicked
-                    )
-                }
-                if(section is ProfileSectionItem.NavigationItem){
-                    NavigationSection(
-                        item = section,
-                        onNavigationClicked = onNavigate
-                    )
-                }
-                if(section is ProfileSectionItem.BooleanSettingsItem){
-                    BooleanSettingsSection(
-                        item = section,
-                        onToggleBooleanSettings = vm::onSettingsToggled
-                    )
-                }
+        items(profileSectionsState, key = { item -> item.type }) { item ->
+            if (item is ProfileSectionItem.AccountSectionItem) {
+                AccountSection(userInfo = item.userInfo, onSignInClicked, onSignOutClicked)
             }
-            item {
-                Divider(
-                    Modifier
-                        .height(0.5.dp)
-                        .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f))
-                )
+            if (item is ProfileSectionItem.NavigationItem) {
+                NavigationSection(item = item, onNavigationClicked = onNavigateInternal)
             }
+            if (item is ProfileSectionItem.BooleanSettingsItem) {
+                BooleanSettingsSection(item = item, onToggleBooleanSettings = vm::onSettingsToggled)
+            }
+            Divider(
+                Modifier
+                    .height(0.5.dp)
+                    .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f))
+            )
         }
     }
 }

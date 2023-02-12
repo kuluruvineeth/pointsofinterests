@@ -21,10 +21,10 @@ fun NavGraphBuilder.categoriesGraph(appState: PoiAppState){
         composable(Screen.CategoriesList.route){
             val viewModel = hiltViewModel<CategoriesViewModel>()
             CategoriesScreen(
-                appState,
                 appState.snackBarHostState,
                 appState.coroutineScope,
-                viewModel
+                viewModel,
+                appState::navigateTo
             )
         }
         composable(

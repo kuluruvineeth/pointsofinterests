@@ -74,8 +74,7 @@ fun AddMoreButton(
 @Composable
 fun CategoryDisplayChips(
     categoryListItem: CategoryUiModel,
-    size: ChipSize = ChipSizeDefaults.basicChip(),
-    onClick: (CategoryUiModel) -> Unit = {}
+    size: ChipSize = ChipSizeDefaults.basicChip()
 ) {
     Box(
         modifier = Modifier
@@ -84,7 +83,6 @@ fun CategoryDisplayChips(
                 shape = RoundedCornerShape(8.dp)
             )
             .padding(size.paddingHorizontal, size.paddingVertical)
-            .clickable { onClick(categoryListItem) }
     ){
         Text(
             modifier = Modifier.align(Alignment.Center),
@@ -103,7 +101,7 @@ fun CategoryFilterChips(
     isSelected: Boolean = false,
     size: ChipSize = ChipSizeDefaults.basicChip(),
     enabled: Boolean = true,
-    onClick: (CategoryUiModel) -> Unit = {}
+    onClick: (String) -> Unit = {}
 ) {
     FilterChip(
         enabled = enabled,
@@ -121,7 +119,7 @@ fun CategoryFilterChips(
             selectedTrailingIconColor = MaterialTheme.colorScheme.onBackground
         ),
         shape = RoundedCornerShape(16.dp),
-        onClick = {onClick(categoryListItem)},
+        onClick = {onClick(categoryListItem.id)},
         leadingIcon = {
             Icon(
                 modifier = Modifier.size(10.dp),
@@ -215,19 +213,14 @@ fun PoiCard(
             }
 
             Row(Modifier.padding(16.dp)){
-                val source = poiListItem.source.takeIf{it.isNullOrEmpty().not()} ?: ""
-                val text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)){
-                        append(source)
-                    }
-                }
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = text,
+                    text = poiListItem.source.takeIf { it.isNullOrEmpty().not() } ?: "",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                     textAlign = TextAlign.Start,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    textDecoration = TextDecoration.Underline
                 )
                 Spacer(modifier = Modifier.size(8.dp))
 

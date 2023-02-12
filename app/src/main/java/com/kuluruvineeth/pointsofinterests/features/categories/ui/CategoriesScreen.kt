@@ -33,10 +33,10 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun CategoriesScreen(
-    appState: PoiAppState,
     snackbarHostState: SnackbarHostState,
     coroutineScope: CoroutineScope,
-    categoriesViewModel: CategoriesViewModel = hiltViewModel()
+    categoriesViewModel: CategoriesViewModel = hiltViewModel(),
+    onNavigate: (Screen, List<Pair<String,Any>>) -> Unit
 ) {
     val categoriesState by categoriesViewModel.categoriesState.collectAsState()
     val itemsToDelete by categoriesViewModel.itemsToDelete.collectAsState()
@@ -45,7 +45,7 @@ fun CategoriesScreen(
             viewModel = categoriesViewModel,
             coroutineScope = coroutineScope,
             snackbarHostState = snackbarHostState,
-            appState = appState,
+            onNavigate = onNavigate,
             categories = categoriesState,
             itemsToDelete = itemsToDelete
         )
@@ -55,7 +55,7 @@ fun CategoriesScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CategoriesContent(
-    appState: PoiAppState,
+    onNavigate: (Screen, List<Pair<String,Any>>) -> Unit,
     viewModel: CategoriesViewModel,
     coroutineScope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
@@ -66,7 +66,7 @@ fun CategoriesContent(
     Column {
         LazyColumn(Modifier.weight(1f)){
             categories.entries.forEach { group ->
-                stickyHeader {
+                stickyHeader(key = group.key) {
                     CategoryTypeHeader(type = stringResource(id = group.key))
                     Divider(
                         modifier = Modifier.animateItemPlacement(),
@@ -100,7 +100,7 @@ fun CategoriesContent(
                                         }
                                     }
                                 }
-                                CategoryAction.EDIT -> appState.navigateTo(
+                                CategoryAction.EDIT -> onNavigate(
                                     Screen.CategoriesDetailed,
                                     listOf(Screen.CategoriesDetailed.ARG_CATEGORY_ID to model.id)
                                 )
