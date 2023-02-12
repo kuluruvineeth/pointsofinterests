@@ -41,7 +41,7 @@ fun EmptyView(
             modifier = Modifier
                 .size(150.dp)
                 .background(
-                    MaterialTheme.colorScheme.primary.copy(0.7f),
+                    MaterialTheme.colorScheme.primary.copy(0.4f),
                     CircleShape
                 )
         ){
@@ -59,8 +59,8 @@ fun EmptyView(
 
         Text(
             text = title,
-            style = MaterialTheme.typography.titleLarge,
-            color = textColor,
+            style = MaterialTheme.typography.titleMedium,
+            color = textColor.copy(alpha = 0.5f),
             maxLines = 1
         )
 
@@ -70,7 +70,7 @@ fun EmptyView(
             Text(
                 text = message,
                 style = MaterialTheme.typography.bodyMedium,
-                color = textColor
+                color = textColor.copy(alpha = 0.5f)
             )
         }
     }

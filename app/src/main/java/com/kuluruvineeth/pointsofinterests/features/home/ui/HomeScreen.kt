@@ -1,6 +1,8 @@
 package com.kuluruvineeth.pointsofinterests.features.home.ui
 
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,6 +34,7 @@ import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.Categor
 import com.kuluruvineeth.pointsofinterests.features.home.ui.composable.AddMoreButton
 import com.kuluruvineeth.pointsofinterests.features.home.ui.models.PoiListItem
 import com.kuluruvineeth.pointsofinterests.features.home.ui.models.PoiSortByUiOption
+import com.kuluruvineeth.pointsofinterests.features.home.ui.models.toSubTitle
 import com.kuluruvineeth.pointsofinterests.features.home.ui.models.toTitle
 import com.kuluruvineeth.pointsofinterests.navigation.Screen
 import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.ActionButton
@@ -39,28 +42,27 @@ import com.kuluruvineeth.pointsofinterests.ui.composables.uistates.EmptyView
 import com.kuluruvineeth.pointsofinterests.ui.composables.uistates.ErrorView
 import com.kuluruvineeth.pointsofinterests.ui.composables.uistates.ProgressView
 import kotlinx.coroutines.flow.MutableStateFlow
+import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.ActionButton
 
+
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalAnimationApi::class, ExperimentalLifecycleComposeApi::class)
 @Composable
 fun HomeScreen(
     navigationController : NavHostController,
-    searchState: MutableState<TextFieldValue>,
     showSortDialogState: Boolean,
     onCloseSortDialog: () -> Unit,
+    onNavigate: (Screen, List<Pair<String, Any>>) -> Unit,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
 
     val homeContentState by homeViewModel.homeUiContentState.collectAsStateWithLifecycle()
     val categoriesState by homeViewModel.categoriesState.collectAsStateWithLifecycle()
-    var selectedFiltersState by rememberSaveable{
-        mutableStateOf<List<String>>(emptyList())
-    }
-    var selectedSortByOption by remember {
-        mutableStateOf(PoiSortByUiOption.NONE)
-    }
 
-    LaunchedEffect(key1 = searchState.value){
-        homeViewModel.onSearch(searchState.value.text)
+    val selectedSortByOption by
+        homeViewModel.displaySortOptionUiState.collectAsStateWithLifecycle()
+    val selectedFiltersState = remember {
+        mutableStateListOf<String>()
     }
 
     Column(
@@ -78,10 +80,9 @@ fun HomeScreen(
                 selectedFilters = selectedFiltersState,
                 categories = categoriesState
             ){filterId ->
-                selectedFiltersState = selectedFiltersState.toMutableList().apply {
-                    if(filterId in selectedFiltersState) remove(filterId)
-                    else add(filterId)
-                }
+                if(filterId in selectedFiltersState)
+                    selectedFiltersState.remove(filterId)
+                else selectedFiltersState.add(filterId)
             }
         }
         Box(modifier = Modifier.weight(1f)){
@@ -92,7 +93,7 @@ fun HomeScreen(
                 )
                 is HomeViewModel.HomeUiContentState.Error -> {
                     val errorState = homeContentState as HomeViewModel.HomeUiContentState.Error
-                    ErrorView(message = errorState.message){
+                    ErrorView(displayObject = errorState.displayObject){
                         homeViewModel.onRetry()
                     }
                 }
@@ -108,7 +109,12 @@ fun HomeScreen(
                         if (targetState) {
                             EmptyView(message = stringResource(id = R.string.message_ui_state_empty_main_screen_no_filters))
                         } else {
-                            HomeScreenContent(poiItems = filteredList, navigationController = navigationController)
+                            HomeScreenContent(poiItems = filteredList){id ->
+                                onNavigate(
+                                    Screen.ViewPoiDetailed,
+                                    listOf(Screen.ViewPoiDetailed.ARG_POI_ID to id)
+                                )
+                            }
                         }
                     }
 
@@ -126,20 +132,39 @@ fun HomeScreen(
                                 contentColor = MaterialTheme.colorScheme.onBackground
                             )
                         ) {
-                            Column {
+                            Column(
+                                modifier = Modifier.background(
+                                    color = MaterialTheme.colorScheme.tertiary.copy(
+                                        alpha = 0.1f
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                            ) {
                                 Text(
-                                    modifier = Modifier.padding(24.dp),
+                                    modifier = Modifier.padding(
+                                        end = 24.dp,
+                                        top = 24.dp,
+                                        start = 24.dp,
+                                        bottom = 8.dp
+                                    ),
                                     text = stringResource(id = R.string.title_dialog_sort_by),
                                     style = MaterialTheme.typography.titleMedium
                                 )
-                                PoiSortByUiOption.values().filter{it != PoiSortByUiOption.NONE}.forEach{option ->
+                                PoiSortByUiOption.values().forEach{option ->
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .clickable { selectedSortByOption = option }
+                                            .clickable {
+                                                homeViewModel.onApplySortBy(option)
+                                                onCloseSortDialog()
+                                            },
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Start
                                     ) {
                                         RadioButton(
-                                            modifier = Modifier.padding(vertical = 12.dp, horizontal = 24.dp),
+                                            modifier = Modifier.padding(
+                                                vertical = 8.dp, horizontal = 24.dp
+                                            ),
                                             selected = (option == selectedSortByOption),
                                             onClick = null,
                                             colors = RadioButtonDefaults.colors(
@@ -149,15 +174,30 @@ fun HomeScreen(
                                                 )
                                             )
                                         )
-                                        Text(
-                                            modifier = Modifier.padding(end = 24.dp, top = 12.dp, bottom = 12.dp),
-                                            text = stringResource(id = option.toTitle()),
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            fontSize = 18.sp
-                                        )
+                                        Column(
+                                            modifier = Modifier.padding(
+                                                end = 24.dp,
+                                                top = 8.dp,
+                                                bottom = 8.dp
+                                            )
+                                        ) {
+                                            Text(
+                                                text = stringResource(id = option.toTitle()),
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                fontSize = 18.sp,
+                                                color = MaterialTheme.colorScheme.onBackground
+                                            )
+                                            Text(
+                                                text = stringResource(id = option.toSubTitle()),
+                                                style = MaterialTheme.typography.labelMedium,
+                                                color = MaterialTheme.colorScheme.onBackground.copy(
+                                                    alpha = 0.5f
+                                                )
+                                            )
+                                        }
                                     }
                                 }
-                                Spacer(modifier = Modifier.size(8.dp))
+                                Spacer(modifier = Modifier.size(4.dp))
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -171,15 +211,10 @@ fun HomeScreen(
                                 ) {
                                     ActionButton(
                                         text = stringResource(id = R.string.cancel),
+                                        containerColor = MaterialTheme.colorScheme.tertiary.copy(
+                                            alpha = 0f
+                                        ),
                                         onClick = {onCloseSortDialog()}
-                                    )
-                                    ActionButton(
-                                        text = stringResource(id = R.string.apply),
-                                        onClick = {
-                                            homeViewModel.onApplySortBy(selectedSortByOption)
-                                            onCloseSortDialog()
-                                        },
-                                        enabled = selectedSortByOption != PoiSortByUiOption.NONE
                                     )
                                 }
                             }
@@ -198,18 +233,16 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContent(
     poiItems: List<PoiListItem>,
-    navigationController: NavHostController
+    onPoiSelected: (String) -> Unit
 ) {
     Column {
         LazyColumn{
             poiItems.forEachIndexed { index, interests ->
                 item(key = interests.hashCode()) {
-                    PoiCard(poiListItem = interests, onClick = {
-                        navigationController.navigate(Screen.CreatePoi.route)
-                    })
+                    PoiCard(poiListItem = interests, onClick = onPoiSelected)
                 }
                     if(index < poiItems.size - 1){
-                        item{
+                        item("divider$index"){
                             Spacer(modifier = Modifier.height(8.dp))
                         }
                     }

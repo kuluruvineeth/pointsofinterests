@@ -13,6 +13,7 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun ViewPoiScreen(
+    poiId: String,
     navHostController: NavHostController
 ) {
     Surface(
