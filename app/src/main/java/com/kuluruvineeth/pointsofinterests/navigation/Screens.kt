@@ -62,7 +62,8 @@ sealed class Screen(
         route = "screen_poi_detailed?poiId={poiId}",
         routePath = "screen_poi_detailed",
         name = R.string.screen_poi,
-        isFullScreen = true
+        isFullScreen = true,
+        menuItems = arrayListOf(MenuItem.Delete)
     ){
         const val ARG_POI_ID = "poiId"
     }

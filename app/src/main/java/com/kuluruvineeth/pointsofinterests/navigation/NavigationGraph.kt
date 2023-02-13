@@ -72,10 +72,9 @@ fun Navigation(
                 type = NavType.StringType
                 nullable = false
             })
-        ){backStackEntry ->
-            val poiId = backStackEntry.arguments?.getString(Screen.ViewPoiDetailed.ARG_POI_ID)
+        ){
             
-            ViewPoiScreen(poiId = requireNotNull(poiId), navHostController = appState.navHostController)
+            ViewPoiScreen(appState, onCloseScreen = appState::onBackClick)
         }
     }
 }

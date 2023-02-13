@@ -150,12 +150,13 @@ fun CategoryFilterChips(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PoiCard(
+    modifier: Modifier = Modifier,
     poiListItem: PoiListItem,
     onClick: (String) -> Unit
 ) {
     ElevatedCard(
         onClick = {onClick(poiListItem.id)},
-        modifier = Modifier.background(MaterialTheme.colorScheme.background),
+        modifier = modifier.background(MaterialTheme.colorScheme.background),
         elevation = CardDefaults.elevatedCardElevation(),
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surface,

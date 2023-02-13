@@ -60,6 +60,12 @@ object CommonFormats{
      */
     const val FORMAT_DATE_WITH_MONTH_NAME = "dd LLL yyyy"
 
+
+    /**
+     * Date/time format: dd LLL yyyy
+     */
+    const val FORMAT_DATE_WITH_MONTH_NAME_AND_TIME = "dd LLL yyyy, HH:mm "
+
     /**
      * Date/time format: yyyy-MM-dd HH:mm:ss
      */

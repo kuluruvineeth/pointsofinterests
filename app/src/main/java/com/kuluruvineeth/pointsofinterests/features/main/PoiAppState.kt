@@ -63,6 +63,17 @@ class PoiAppState(
 
     var showSortDialog by mutableStateOf(false)
 
+
+    private val menuItemClickObservers = mutableMapOf<MenuActionType, OnMenuItemListener>()
+
+    fun registerMenuItemClickObserver(actionType: MenuActionType, menuItemListener: OnMenuItemListener){
+        menuItemClickObservers[actionType] = menuItemListener
+    }
+
+    fun disposeMenuItemObserver(actionType: MenuActionType){
+        menuItemClickObservers.remove(actionType)
+    }
+
     fun navigateToRoot(screen: Screen){
         navHostController.navigate(screen.route){
             popUpTo(navHostController.graph.findStartDestination().id){
@@ -92,7 +103,12 @@ class PoiAppState(
             MenuActionType.SEARCH -> showSearchBarState = true
             MenuActionType.ADD -> navigateTo(Screen.CategoriesDetailed)
             MenuActionType.SORT -> showSortDialog = true
+            else -> menuItemClickObservers[actionType]!!.onMenuItemClicked(actionType)
         }
     }
 
+}
+
+interface OnMenuItemListener{
+    fun onMenuItemClicked(menuActionType: MenuActionType)
 }
