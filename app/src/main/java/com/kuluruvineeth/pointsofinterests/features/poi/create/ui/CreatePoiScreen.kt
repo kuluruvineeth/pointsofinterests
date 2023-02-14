@@ -72,7 +72,7 @@ fun CreatePoiScreen(
     viewModel: CreatePoiViewModel = hiltViewModel()
 ) {
 
-    LaunchedEffect(key1 = viewModel.finishScreen){
+    LaunchedEffect(key1 = true){
         viewModel.finishScreen.collect{state ->
             if(state) onCloseScreen()
         }

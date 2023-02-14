@@ -2,7 +2,6 @@ package com.kuluruvineeth.pointsofinterests.features.profile.ui
 
 import android.app.Activity
 import android.content.Context
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,7 +19,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,15 +28,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.style.LineHeightStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import coil.compose.SubcomposeAsyncImage
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -46,16 +40,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.kuluruvineeth.pointsofinterests.features.profile.models.ProfileSectionItem
 import com.kuluruvineeth.pointsofinterests.features.profile.models.ProfileSectionType
 import com.kuluruvineeth.pointsofinterests.features.profile.models.UserInfo
-import com.kuluruvineeth.pointsofinterests.features.profile.viewmodel.ProfileVm
+import com.kuluruvineeth.pointsofinterests.features.profile.viewmodel.ProfileViewModel
 import com.kuluruvineeth.pointsofinterests.navigation.Screen
-import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.PrimaryButton
 import com.kuluruvineeth.pointsofinterests.R
 import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.PulsingProgressBar
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun ProfileScreen(
-    vm: ProfileVm = hiltViewModel(),
+    vm: ProfileViewModel = hiltViewModel(),
     onNavigate: (Screen) -> Unit
 ) {
     val context = LocalContext.current

@@ -8,6 +8,7 @@ import com.kuluruvineeth.data.features.categories.model.CategoryEntity
 import com.kuluruvineeth.data.features.poi.db.PoiDao
 import com.kuluruvineeth.data.features.poi.model.PoiCommentEntity
 import com.kuluruvineeth.data.features.poi.model.PoiEntity
+import com.kuluruvineeth.data.features.poi.model.PoiFtsEntity
 import com.kuluruvineeth.data.features.poi.model.PoiWithCategoriesCrossRef
 
 
@@ -15,6 +16,7 @@ import com.kuluruvineeth.data.features.poi.model.PoiWithCategoriesCrossRef
     entities = [
         CategoryEntity::class,
         PoiEntity::class,
+        PoiFtsEntity::class,
         PoiWithCategoriesCrossRef::class,
         PoiCommentEntity::class,
         ],

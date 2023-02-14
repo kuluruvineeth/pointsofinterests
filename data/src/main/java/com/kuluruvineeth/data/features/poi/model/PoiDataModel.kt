@@ -29,9 +29,9 @@ fun PoiWithCategoriesEntity.toDataModel() = entity.toDataModel(categories)
 fun PoiEntity.toDataModel(categories: List<CategoryEntity> = emptyList()) =
     PoiDataModel(
         id = id,
-        contentLink = contentLink,
+        contentLink = contentLink.takeIf { it!!.isNotEmpty() },
         title = title,
-        body = body,
+        body = body.takeIf { it!!.isNotEmpty() },
         imageUrl = imageUrl,
         creationDate = creationDateTime,
         severity = severity,
@@ -40,9 +40,9 @@ fun PoiEntity.toDataModel(categories: List<CategoryEntity> = emptyList()) =
     )
 
 fun PoiDataModel.toEntity() = PoiEntity(
-    contentLink = contentLink,
+    contentLink = contentLink ?: "",
     title = title,
-    body = body,
+    body = body ?: "",
     imageUrl = imageUrl,
     creationDateTime = creationDate,
     severity = severity,

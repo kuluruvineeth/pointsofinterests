@@ -10,9 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.Icon
-import androidx.compose.material.Surface
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,14 +25,12 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import com.kuluruvineeth.pointsofinterests.core.utils.chromeTabsIntent
 import com.kuluruvineeth.pointsofinterests.core.utils.launch
 import com.kuluruvineeth.pointsofinterests.features.main.OnMenuItemListener
@@ -43,7 +39,7 @@ import com.kuluruvineeth.pointsofinterests.features.poi.view.models.PoiDetailLis
 import com.kuluruvineeth.pointsofinterests.features.poi.view.ui.*
 import com.kuluruvineeth.pointsofinterests.navigation.MenuActionType
 import com.kuluruvineeth.pointsofinterests.R
-import com.kuluruvineeth.pointsofinterests.features.poi.view.viewmodel.ViewPoiVm
+import com.kuluruvineeth.pointsofinterests.features.poi.view.viewmodel.ViewPoiViewModel
 import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.ActionButton
 import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.PoiFilledTextField
 import kotlinx.coroutines.launch
@@ -56,11 +52,11 @@ import kotlinx.coroutines.launch
 fun ViewPoiScreen(
     appState: PoiAppState,
     onCloseScreen: () -> Unit,
-    viewModel: ViewPoiVm = hiltViewModel()
+    viewModel: ViewPoiViewModel = hiltViewModel()
 ) {
 
 
-    LaunchedEffect(key1 = viewModel.finishScreenState){
+    LaunchedEffect(key1 = true){
         viewModel.finishScreenState.collect{event ->
             if(event) onCloseScreen()
         }
@@ -84,15 +80,13 @@ fun ViewPoiScreen(
         chromeTabsIntent.launch(context,link)
     }
 
-    LaunchedEffect(key1 = true){
+    DisposableEffect(key1 = true){
         appState.registerMenuItemClickObserver(MenuActionType.DELETE, object : OnMenuItemListener{
             override fun onMenuItemClicked(menuActionType: MenuActionType) {
                 showDeleteConfirmationState = true
             }
         })
-    }
 
-    DisposableEffect(key1 = true){
         onDispose {
             appState.disposeMenuItemObserver(MenuActionType.DELETE)
         }

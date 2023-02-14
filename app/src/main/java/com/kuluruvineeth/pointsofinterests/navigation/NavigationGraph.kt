@@ -45,7 +45,7 @@ fun Navigation(
         }
         categoriesGraph(appState)
         composable(Screen.Search.route){
-            SearchScreen(appState = appState, searchQuery = appState.searchState.value )
+            SearchScreen(appState = appState )
         }
         composable(Screen.Profile.route){
             ProfileScreen{
