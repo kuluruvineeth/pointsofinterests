@@ -26,7 +26,8 @@ class CategoriesViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    val detailedCategoriesUiState = MutableStateFlow<DetailedCategoriesUiState>(DetailedCategoriesUiState.Loading)
+    private val _detailedCategoriesUiState = MutableStateFlow<DetailedCategoriesUiState>(DetailedCategoriesUiState.Loading)
+    val detailedCategoriesUiState = _detailedCategoriesUiState.asStateFlow()
 
     val categoriesState = getCategoriesUseCase(Unit).map { list ->
         list!!.map { it.toUiModel() }.groupBy { it.categoryType.toTitle() }
@@ -40,13 +41,13 @@ class CategoriesViewModel @Inject constructor(
 
     fun onFetchDetailedState(categoryId: String?) {
         viewModelScope.launch {
-            detailedCategoriesUiState.value = DetailedCategoriesUiState.Loading
+            _detailedCategoriesUiState.value = DetailedCategoriesUiState.Loading
             if (categoryId.isNullOrEmpty()) {
-                detailedCategoriesUiState.value = DetailedCategoriesUiState.Success(null)
+                _detailedCategoriesUiState.value = DetailedCategoriesUiState.Success(null)
                 return@launch
             }
             val selectedCategory = getCategoryUseCase(GetCategoryUseCase.Params(categoryId))
-            detailedCategoriesUiState.value = DetailedCategoriesUiState.Success(selectedCategory!!.toUiModel())
+            _detailedCategoriesUiState.value = DetailedCategoriesUiState.Success(selectedCategory!!.toUiModel())
         }
     }
 

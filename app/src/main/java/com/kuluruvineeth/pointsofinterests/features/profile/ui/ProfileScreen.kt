@@ -35,6 +35,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.SubcomposeAsyncImage
@@ -50,6 +52,7 @@ import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.PrimaryButton
 import com.kuluruvineeth.pointsofinterests.R
 import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.PulsingProgressBar
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun ProfileScreen(
     vm: ProfileVm = hiltViewModel(),
@@ -68,7 +71,7 @@ fun ProfileScreen(
         }
     }
 
-    val profileSectionsState by vm.profileState.collectAsState()
+    val profileSectionsState by vm.profileState.collectAsStateWithLifecycle()
 
     val onNavigateInternal: (ProfileSectionType) -> Unit = {type ->
         if(type == ProfileSectionType.CATEGORIES){

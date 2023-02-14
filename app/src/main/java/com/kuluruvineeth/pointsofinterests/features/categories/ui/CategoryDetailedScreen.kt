@@ -25,6 +25,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.CategoryUiModel
 import com.kuluruvineeth.pointsofinterests.features.categories.viewmodel.CategoriesViewModel
 import com.kuluruvineeth.pointsofinterests.ui.composables.uistates.ProgressView
@@ -33,7 +35,9 @@ import com.kuluruvineeth.pointsofinterests.features.categories.ui.composable.Gri
 import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.DetailedCategoriesUiState
 import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.PrimaryButton
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class,
+    ExperimentalLifecycleComposeApi::class
+)
 @Composable
 fun CategoriesDetailedScreen(
     categoryId: String?,
@@ -41,7 +45,7 @@ fun CategoriesDetailedScreen(
     onBack: () -> Unit
 ) {
 
-    val uiState by viewModel.detailedCategoriesUiState.collectAsState()
+    val uiState by viewModel.detailedCategoriesUiState.collectAsStateWithLifecycle()
     var textFieldState by remember { mutableStateOf(TextFieldValue(""))}
     var selectedColorState by remember { mutableStateOf(Color.Transparent)}
     val focusRequester = remember {

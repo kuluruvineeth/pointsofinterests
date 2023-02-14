@@ -17,6 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.kuluruvineeth.pointsofinterests.features.categories.ui.composable.CategoryTypeHeader
 import com.kuluruvineeth.pointsofinterests.features.categories.ui.composable.CategoryView
@@ -31,6 +33,7 @@ import com.kuluruvineeth.pointsofinterests.navigation.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun CategoriesScreen(
     snackbarHostState: SnackbarHostState,
@@ -38,8 +41,8 @@ fun CategoriesScreen(
     categoriesViewModel: CategoriesViewModel = hiltViewModel(),
     onNavigate: (Screen, List<Pair<String,Any>>) -> Unit
 ) {
-    val categoriesState by categoriesViewModel.categoriesState.collectAsState()
-    val itemsToDelete by categoriesViewModel.itemsToDelete.collectAsState()
+    val categoriesState by categoriesViewModel.categoriesState.collectAsStateWithLifecycle()
+    val itemsToDelete by categoriesViewModel.itemsToDelete.collectAsStateWithLifecycle()
     Box(modifier = Modifier.background(MaterialTheme.colorScheme.background)){
         CategoriesContent(
             viewModel = categoriesViewModel,

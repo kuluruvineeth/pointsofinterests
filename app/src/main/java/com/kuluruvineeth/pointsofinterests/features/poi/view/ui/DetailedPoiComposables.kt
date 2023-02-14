@@ -1,10 +1,16 @@
 package com.kuluruvineeth.pointsofinterests.features.poi.view.ui
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.DismissDirection
+import androidx.compose.material.DismissValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,9 +26,12 @@ import coil.compose.SubcomposeAsyncImage
 import com.google.accompanist.flowlayout.FlowRow
 import com.kuluruvineeth.pointsofinterests.core.utils.isRemoteImageUri
 import com.kuluruvineeth.pointsofinterests.R
+import com.kuluruvineeth.pointsofinterests.core.utils.SnackbarDisplayObject
 import com.kuluruvineeth.pointsofinterests.core.utils.extractSource
+import com.kuluruvineeth.pointsofinterests.features.categories.ui.composable.rememberDismissStateWithConfirmation
 import com.kuluruvineeth.pointsofinterests.features.categories.ui.models.CategoryUiModel
 import com.kuluruvineeth.pointsofinterests.features.home.ui.composable.CategoryFilterChips
+import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.LinkifyText
 import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.PulsingProgressBar
 
 @Composable
@@ -121,12 +130,17 @@ fun PoiTitle(title: String) {
 }
 
 @Composable
-fun PoiDescription(body: String) {
-    Text(
+fun PoiDescription(
+    body: String,
+    onLinkClicked: (String) -> Unit
+) {
+    LinkifyText(
         modifier = Modifier.padding(top = 16.dp),
+        linkColor = MaterialTheme.colorScheme.primary,
         text = body,
         style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onBackground
+        color = MaterialTheme.colorScheme.onBackground,
+        onClickLink = onLinkClicked
     )
 }
 
@@ -210,6 +224,7 @@ fun PoiCommentsCount(count: Int) {
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PoiComment(
     modifier: Modifier = Modifier,
@@ -217,34 +232,83 @@ fun PoiComment(
     message: String,
     dateTime: String,
     shouldShowDivider: Boolean,
-    onDeleteComment: (String) -> Unit
+    onDeleteComment: (String, SnackbarDisplayObject) -> Unit,
+    onLinkClicked: (String) -> Unit
 ) {
-    Column(
-        modifier = modifier.padding(top = 16.dp, bottom = 16.dp)
-    ) {
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = message,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
-        )
 
-        Text(
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .fillMaxWidth(),
-            text = dateTime,
-            textAlign = TextAlign.Start,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(
-                alpha = 0.4f
-            )
-        )
+    val dismissStateWrapper = rememberDismissStateWithConfirmation(
+        message = stringResource(id = R.string.message_snack_bar_comment_deleted),
+        actionTitle = stringResource(id = R.string.action_undo)
+    ){displayObject ->
+        onDeleteComment(id,displayObject)
     }
 
     if(shouldShowDivider)
-        Divider(
-            thickness = 0.5.dp,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)
+        SwipeToDismiss(
+            modifier = modifier,
+            state = dismissStateWrapper.dismissState,
+            directions = setOf(DismissDirection.EndToStart),
+            dismissThresholds = {
+                androidx.compose.material.FractionalThreshold(0.5f)
+            },
+            background = {
+                val color by animateColorAsState(
+                    when(dismissStateWrapper.dismissState.targetValue){
+                        DismissValue.Default ->
+                            MaterialTheme.colorScheme.error.copy(alpha = 0.5f)
+                        else -> MaterialTheme.colorScheme.error
+                    }
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color)
+                        .padding(horizontal = 16.dp),
+                    contentAlignment = Alignment.CenterEnd
+                ){
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_delete_forever),
+                        contentDescription = "Delete Icon",
+                        tint = MaterialTheme.colorScheme.onError
+                    )
+                }
+            },
+            dismissContent = {
+                Column(
+                    modifier = modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(top = 16.dp, bottom = 16.dp)
+                ) {
+                    LinkifyText(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = message,
+                        linkColor = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground.copy(
+                            alpha = 0.8f
+                        ),
+                        onClickLink = onLinkClicked
+                    )
+                    
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .fillMaxWidth(),
+                        text = dateTime,
+                        textAlign = TextAlign.Start,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground.copy(
+                            alpha = 0.4f
+                        )
+                    )
+                }
+                if(shouldShowDivider)
+                    Divider(
+                        thickness = 0.5.dp,
+                        color = MaterialTheme.colorScheme.onBackground.copy(
+                            alpha = 0.2f
+                        )
+                    )
+            }
         )
 }
