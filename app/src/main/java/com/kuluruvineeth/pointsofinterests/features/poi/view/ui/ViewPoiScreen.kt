@@ -59,7 +59,13 @@ fun ViewPoiScreen(
     viewModel: ViewPoiVm = hiltViewModel()
 ) {
 
-    val finishScreenState by viewModel.finishScreenState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(key1 = viewModel.finishScreenState){
+        viewModel.finishScreenState.collect{event ->
+            if(event) onCloseScreen()
+        }
+    }
+
     var showDeleteConfirmationState by remember {
         mutableStateOf(false)
     }
@@ -76,12 +82,6 @@ fun ViewPoiScreen(
     val lazyColumnState = rememberLazyListState()
     val onLinkClicked: (String) -> Unit = {link ->
         chromeTabsIntent.launch(context,link)
-    }
-
-    LaunchedEffect(key1 = finishScreenState){
-        if(finishScreenState){
-            onCloseScreen()
-        }
     }
 
     LaunchedEffect(key1 = true){

@@ -22,6 +22,7 @@ import com.kuluruvineeth.pointsofinterests.features.main.PoiAppState
 import com.kuluruvineeth.pointsofinterests.features.poi.create.CreatePoiScreen
 import com.kuluruvineeth.pointsofinterests.features.poi.view.ViewPoiScreen
 import com.kuluruvineeth.pointsofinterests.features.profile.ui.ProfileScreen
+import com.kuluruvineeth.pointsofinterests.features.search.ui.SearchScreen
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -43,6 +44,9 @@ fun Navigation(
             )
         }
         categoriesGraph(appState)
+        composable(Screen.Search.route){
+            SearchScreen(appState = appState, searchQuery = appState.searchState.value )
+        }
         composable(Screen.Profile.route){
             ProfileScreen{
                 appState.navigateTo(it)

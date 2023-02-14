@@ -71,10 +71,11 @@ fun CreatePoiScreen(
     onCloseScreen: () -> Unit,
     viewModel: CreatePoiViewModel = hiltViewModel()
 ) {
-    val finishScreenState = viewModel.finishScreen.collectAsStateWithLifecycle()
 
-    if(finishScreenState.value){
-        onCloseScreen()
+    LaunchedEffect(key1 = viewModel.finishScreen){
+        viewModel.finishScreen.collect{state ->
+            if(state) onCloseScreen()
+        }
     }
 
     val screenState = viewModel.screenState.collectAsStateWithLifecycle()
@@ -385,7 +386,10 @@ fun CategoriesSelectionBottomSheet(
                     .padding(16.dp)
                     .width(32.dp)
                     .height(8.dp)
-                    .background(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f), shape = RoundedCornerShape(16.dp))
+                    .background(
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f),
+                        shape = RoundedCornerShape(16.dp)
+                    )
             )
             LazyColumn {
                 categoriesState.entries.forEach { entry ->

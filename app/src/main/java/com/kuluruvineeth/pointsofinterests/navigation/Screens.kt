@@ -41,6 +41,12 @@ sealed class Screen(
         const val ARG_CATEGORY_ID = "categoryId"
     }
 
+    object Search: Screen(
+        route = "screen_search",
+        R.string.screen_home,
+        isFullScreen = true
+    )
+
     object Profile : Screen(
         route = "screen_profile",
         R.string.screen_profile,
@@ -70,7 +76,15 @@ sealed class Screen(
 
     companion object{
         val all = arrayListOf(
-            Home,Categories,Profile,CreatePoi,ViewPoiDetailed,CategoriesList,CategoriesDetailed,About
+            Home,
+            Search,
+            Categories,
+            Profile,
+            CreatePoi,
+            ViewPoiDetailed,
+            CategoriesList,
+            CategoriesDetailed,
+            About
         )
     }
 }

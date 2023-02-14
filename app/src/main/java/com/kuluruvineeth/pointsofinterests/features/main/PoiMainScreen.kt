@@ -25,14 +25,6 @@ fun PoiMainScreen(
     appState: PoiAppState = rememberPoiAppState()
 ) {
 
-    BackHandler(appState.showSearchBarState) {
-        appState.showSearchBarState = false
-    }
-
-    LaunchedEffect(key1 = appState.currentScreen != Screen.Home && appState.showSearchBarState) {
-        appState.showSearchBarState = false
-    }
-
         Scaffold(
         backgroundColor = MaterialTheme.colorScheme.background,
         floatingActionButtonPosition = FabPosition.Center,

@@ -31,8 +31,8 @@ class ViewPoiVm @Inject constructor(
     private val idState = MutableStateFlow("")
 
 
-    private val _finishScreenState = MutableStateFlow(false)
-    val finishScreenState = _finishScreenState.asStateFlow()
+    private val _finishScreenState = MutableSharedFlow<Boolean>()
+    val finishScreenState = _finishScreenState.asSharedFlow()
 
     private val _uiState = MutableStateFlow<List<PoiDetailListItem>>(emptyList())
     val uiState = _uiState.asStateFlow()
@@ -51,6 +51,11 @@ class ViewPoiVm @Inject constructor(
                     .onEach { comments -> _uiState.value = poi.toUIModelWithComments(comments!!) }
                     .catch { error -> Log.e(ViewPoiVm::class.java.simpleName,error.message,error) }
             }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = ""
+            )
 
     init {
         mainState.launchIn(viewModelScope)
@@ -85,7 +90,7 @@ class ViewPoiVm @Inject constructor(
         viewModelScope.launch {
             val id = idState.value
             deletePoiUseCase(DeletePoiUseCase.Params(id))
-            _finishScreenState.update { true }
+            _finishScreenState.emit(true)
         }
     }
 }
