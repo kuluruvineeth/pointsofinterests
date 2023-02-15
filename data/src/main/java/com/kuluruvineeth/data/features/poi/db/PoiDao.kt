@@ -63,6 +63,9 @@ interface PoiDao {
     @Query(value = "DELETE FROM table_poi WHERE id = :id")
     suspend fun deletePoi(id: Int)
 
+    @Query(value = "UPDATE table_poi SET viewed = :isViewed WHERE id = :id")
+    suspend fun updatePoiViewed(id: Int, isViewed: Boolean)
+
     @Transaction
     suspend fun insertCommentTransaction(entity: PoiCommentEntity){
         insertComment(entity)
