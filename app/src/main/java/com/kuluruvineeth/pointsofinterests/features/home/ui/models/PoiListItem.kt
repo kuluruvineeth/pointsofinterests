@@ -23,7 +23,7 @@ data class PoiListItem(
 fun PoiModel.toListUiModel() = PoiListItem(
     id = id,
     title = title,
-    subtitle = body,
+    subtitle = body!!,
     source = source,
     imageUrl = imageUrl,
     commentsCount = commentsCount,

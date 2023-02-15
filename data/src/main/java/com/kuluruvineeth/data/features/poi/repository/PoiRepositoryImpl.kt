@@ -47,8 +47,11 @@ class PoiRepositoryImpl @Inject constructor(
         localDataSource.insertPoi(finalPayload.creationDataModel())
     }
 
-    override suspend fun deletePoi(id: String) {
-        localDataSource.deletePoi(id)
+    override suspend fun deletePoi(model: PoiModel) {
+        localDataSource.deletePoi(model.id)
+        model.imageUrl?.takeIf { it.startsWith(LOCAL_IMAGE_PREFIX) }?.let { uri ->
+            imageDataSource.deleteImage(uri)
+        }
     }
 
     override suspend fun addComment(targetId: String, payload: PoiCommentPayload) {
@@ -70,6 +73,7 @@ class PoiRepositoryImpl @Inject constructor(
 
     companion object{
         private const val CONTENT_URI_PREFIX = "content://"
+        private const val LOCAL_IMAGE_PREFIX = "file:///"
     }
 
 }

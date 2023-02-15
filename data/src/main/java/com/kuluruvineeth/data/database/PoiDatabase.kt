@@ -20,7 +20,7 @@ import com.kuluruvineeth.data.features.poi.model.PoiWithCategoriesCrossRef
         PoiWithCategoriesCrossRef::class,
         PoiCommentEntity::class,
         ],
-    version = 2,
+    version = 1,
     exportSchema = true
 )
 @TypeConverters(InstantConverter::class)

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kuluruvineeth.domain.features.poi.interactor.*
 import com.kuluruvineeth.domain.features.poi.models.PoiCommentPayload
+import com.kuluruvineeth.domain.features.poi.models.PoiModel
 import com.kuluruvineeth.pointsofinterests.features.poi.view.models.PoiDetailListItem
 import com.kuluruvineeth.pointsofinterests.features.poi.view.models.toUIModelWithComments
 import com.kuluruvineeth.pointsofinterests.navigation.Screen
@@ -28,7 +29,7 @@ class ViewPoiViewModel @Inject constructor(
     private val deleteCommentUseCase: DeleteCommentUseCase
 ) : ViewModel(){
 
-    private val idState = MutableStateFlow("")
+    private val modelState = MutableStateFlow(PoiModel.EMPTY)
 
 
     private val _finishScreenState = MutableSharedFlow<Boolean>()
@@ -44,8 +45,8 @@ class ViewPoiViewModel @Inject constructor(
     private val mainState =
         savedStateHandle.getStateFlow(Screen.ViewPoiDetailed.ARG_POI_ID,"")
             .filter { it.isNotEmpty() }
-            .onEach { id -> idState.value = id }
             .map { getDetailedPoiUseCase(GetDetailedPoiUseCase.Params(it)) }
+            .onEach { model -> modelState.emit(model!!) }
             .flatMapConcat { poi ->
                 getCommentsUseCase(GetCommentsUseCase.Params(poi!!.id))
                     .onEach { comments -> _uiState.value = poi.toUIModelWithComments(comments!!) }
@@ -64,7 +65,7 @@ class ViewPoiViewModel @Inject constructor(
     fun onAddComment(message: String){
         viewModelScope.launch {
             val payload = PoiCommentPayload(message)
-            addCommentsUseCase(AddCommentUseCase.Params(idState.value,payload))
+            addCommentsUseCase(AddCommentUseCase.Params(modelState.value.id,payload))
         }
     }
 
@@ -88,8 +89,7 @@ class ViewPoiViewModel @Inject constructor(
 
     fun onDeletePoi(){
         viewModelScope.launch {
-            val id = idState.value
-            deletePoiUseCase(DeletePoiUseCase.Params(id))
+            deletePoiUseCase(DeletePoiUseCase.Params(modelState.value))
             _finishScreenState.emit(true)
         }
     }

@@ -23,7 +23,7 @@ object DatabaseModule {
         Room.databaseBuilder(
             context,
             PoiDatabase::class.java,
-            "kuluruvineeth-poi-database2")
+            "kuluruvineeth-poi-database3")
             //.createFromAsset(DB_NAME)
             .build()
 }
