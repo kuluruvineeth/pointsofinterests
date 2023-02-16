@@ -31,7 +31,7 @@ class AddCategoryUseCaseTest {
     }
 
     @Test
-    fun test_add_category_use_case_invokes_addCategory_repo_function() =
+    fun test_AddCategoryUseCaseTest_invokes_addCategory_repo_function() =
         runTest{
             val categoryName = "Random name"
             val color = Color.WHITE
@@ -43,7 +43,7 @@ class AddCategoryUseCaseTest {
         }
 
     @Test(expected = Throwable::class)
-    fun test_add_category_use_case_throws_exception_when_addCategory_throws_exception() = runTest {
+    fun test_AddCategoryUseCaseTest_throws_exception_when_addCategory_throws_exception() = runTest {
         val categoryName = "Random name"
         val color = Color.WHITE
 

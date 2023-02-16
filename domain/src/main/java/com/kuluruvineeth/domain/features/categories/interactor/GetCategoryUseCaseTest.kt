@@ -31,7 +31,7 @@ class GetCategoryUseCaseTest {
     }
 
     @Test
-    fun test_get_category_use_case_invokes_getCategory_repo_function() = runTest {
+    fun test_GetCategoryUseCaseTest_invokes_getCategory_repo_function() = runTest {
 
         val id = "someId"
         SUT.invoke(GetCategoryUseCase.Params(id))
@@ -41,7 +41,7 @@ class GetCategoryUseCaseTest {
     }
 
     @Test
-    fun test_get_category_use_case_returns_same_value_as_getCategory_repo_function() = runTest {
+    fun test_GetCategoryUseCaseTest_returns_same_value_as_getCategory_repo_function() = runTest {
 
         val id = "someId"
         val category = mock<Category>()
@@ -51,7 +51,7 @@ class GetCategoryUseCaseTest {
     }
 
     @Test(expected = Throwable::class)
-    fun test_get_category_use_case_throws_exception_when_getCategory_throws_exception() = runTest {
+    fun test_GetCategoryUseCaseTest_throws_exception_when_getCategory_throws_exception() = runTest {
 
         val id = "someId"
 

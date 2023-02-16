@@ -4,7 +4,7 @@ import com.kuluruvineeth.domain.core.UseCase
 import com.kuluruvineeth.domain.features.profile.repo.ProfileRepository
 import javax.inject.Inject
 
-class DeleteUseProfileUseCase @Inject constructor(
+class DeleteUserProfileUseCase @Inject constructor(
     private val repository: ProfileRepository
 ) : UseCase<Unit,Unit>() {
 

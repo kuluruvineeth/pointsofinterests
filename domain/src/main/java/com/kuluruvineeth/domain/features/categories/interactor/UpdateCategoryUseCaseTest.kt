@@ -30,7 +30,7 @@ class UpdateCategoryUseCaseTest {
     }
 
     @Test
-    fun test_update_category_use_case_invokes_updateCategory_repo_function() =
+    fun test_UpdateCategoryUseCaseTest_invokes_updateCategory_repo_function() =
         runTest {
             val category = mock<Category>()
             SUT.invoke(UpdateCategoryUseCase.Params(category))
@@ -40,7 +40,7 @@ class UpdateCategoryUseCaseTest {
         }
 
     @Test(expected = Throwable::class)
-    fun test_update_category_use_case_throws_exception_when_updateCategory_throws_exception() = runTest {
+    fun test_UpdateCategoryUseCaseTest_throws_exception_when_updateCategory_throws_exception() = runTest {
 
         val category = mock<Category>()
 

@@ -28,7 +28,7 @@ class DeleteCategoryUseCaseTest {
     }
 
     @Test
-    fun test_delete_category_use_case_invokes_deleteCategory_repo_function() =
+    fun test_DeleteCategoryUseCaseTest_invokes_deleteCategory_repo_function() =
         runTest {
             val id = "id"
             SUT.invoke(DeleteCategoryUseCase.Params(id))
@@ -38,7 +38,7 @@ class DeleteCategoryUseCaseTest {
         }
 
     @Test(expected = Throwable::class)
-    fun test_delete_category_use_case_throws_exception_when_deleteCategory_throws_exception() = runTest {
+    fun test_DeleteCategoryUseCaseTest_throws_exception_when_deleteCategory_throws_exception() = runTest {
         val id = "id"
 
         MockitoHelper.whenever(repository.deleteCategory(MockitoHelper.anyNonNull())).thenThrow(IllegalStateException())

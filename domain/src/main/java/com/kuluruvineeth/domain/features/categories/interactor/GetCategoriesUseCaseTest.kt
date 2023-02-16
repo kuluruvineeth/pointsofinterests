@@ -29,7 +29,7 @@ class GetCategoriesUseCaseTest {
     }
 
     @Test
-    fun test_get_categories_use_case_invokes_getCategories_repo_function() =
+    fun test_GetCategoriesUseCaseTest_invokes_getCategories_repo_function() =
         runTest {
             val mockCategory1 = mock<Category>()
             val mockCategory2 = mock<Category>()
@@ -41,7 +41,7 @@ class GetCategoriesUseCaseTest {
         }
 
     @Test
-    fun test_get_categories_use_case_emits_exception_when_flow_in_getCategories_throws_exception() = runTest {
+    fun test_GetCategoriesUseCaseTest_emits_exception_when_flow_in_getCategories_throws_exception() = runTest {
         whenever(repository.getCategories()).thenReturn(flow { throw IllegalStateException() })
         var excepton: Throwable = mock()
         SUT.invoke(Unit).catch { excepton = it }.toList()

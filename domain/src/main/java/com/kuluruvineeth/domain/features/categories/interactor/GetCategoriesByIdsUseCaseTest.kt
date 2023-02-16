@@ -32,7 +32,7 @@ class GetCategoriesByIdsUseCaseTest {
     }
 
     @Test
-    fun test_get_categories_by_ids_use_case_invokes_getCategories_repo_function() = runTest {
+    fun test_GetCategoriesByIdsUseCaseTest_invokes_getCategories_repo_function() = runTest {
         val ids = arrayListOf(1,2,3)
 
         val mockCategory1 = mock<Category>()
@@ -51,7 +51,7 @@ class GetCategoriesByIdsUseCaseTest {
     }
 
     @Test
-    fun test_get_categories_by_ids_use_case_emits_exception_when_flow_in_getCategories_throws_exception() = runTest {
+    fun test_GetCategoriesByIdsUseCaseTest_emits_exception_when_flow_in_getCategories_throws_exception() = runTest {
         val ids = arrayListOf(1,2,3)
         MockitoHelper.whenever(repository.getCategories(ids)).thenReturn(flow {
             throw IllegalStateException()
