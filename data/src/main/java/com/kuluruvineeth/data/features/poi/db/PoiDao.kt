@@ -5,10 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.kuluruvineeth.data.features.poi.model.PoiCommentEntity
-import com.kuluruvineeth.data.features.poi.model.PoiEntity
-import com.kuluruvineeth.data.features.poi.model.PoiWithCategoriesCrossRef
-import com.kuluruvineeth.data.features.poi.model.PoiWithCategoriesEntity
+import com.kuluruvineeth.data.features.poi.model.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -112,4 +109,16 @@ interface PoiDao {
 
     @Query(value = " DELETE FROM table_poi_comments WHERE parent_id IN (:parentIds)")
     suspend fun deleteCommentsForParents(parentIds: List<Int>)
+
+    @Query(value = "SELECT category_id AS categoryId, COUNT(poi_id) AS count FROM table_poi_to_category GROUP BY category_id")
+    suspend fun getUsedCategoriesCount(): List<UsedCategoriesStatisticsEntity>
+
+    @Query(value = "SELECT COUNT(*) FROM table_poi WHERE viewed = 1")
+    suspend fun getViewedPoiCount(): Int
+
+    @Query(value = "SELECT COUNT(*) FROM table_poi WHERE viewed = 0")
+    suspend fun getUnViewedPoiCount(): Int
+
+    @Query(value = "SELECT date(creation_date_time/1000, 'unixepoch') AS date, COUNT(id) AS count FROM table_poi GROUP BY date")
+    suspend fun getAdditionHistory(): List<PoiHistoryEntity>
 }
