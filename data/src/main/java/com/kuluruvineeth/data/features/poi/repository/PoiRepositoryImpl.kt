@@ -1,5 +1,6 @@
 package com.kuluruvineeth.data.features.poi.repository
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.kuluruvineeth.data.core.Local
@@ -33,6 +34,7 @@ class PoiRepositoryImpl @Inject constructor(
     override suspend fun getDetailedPoi(id: String): PoiModel? =
         localDataSource.getPoi(id).toDomain()
 
+    @SuppressLint("SuspiciousIndentation")
     @RequiresApi(Build.VERSION_CODES.Q)
     override suspend fun createPoi(payload: PoiCreationPayload) {
         val finalPayload: PoiCreationPayload = if
@@ -50,6 +52,17 @@ class PoiRepositoryImpl @Inject constructor(
         localDataSource.deletePoi(model.id)
         model.imageUrl?.takeIf { it.startsWith(LOCAL_IMAGE_PREFIX) }?.let { uri ->
             imageDataSource.deleteImage(uri)
+        }
+    }
+
+    override suspend fun deleteGarbage(){
+        val deletedItems = localDataSource.deletePoiOlderThen(GARBAGE_DAYS_THRESHOLD)
+        deletedItems.filter { item ->
+            item.imageUrl?.startsWith(LOCAL_IMAGE_PREFIX) == true
+        }.forEach { model ->
+            if(model.imageUrl != null){
+                imageDataSource.deleteImage(model.imageUrl)
+            }
         }
     }
 
@@ -71,6 +84,7 @@ class PoiRepositoryImpl @Inject constructor(
         wizardRemoteDataSource.getWizardSuggestion(contentUrl).toDomain()
 
     companion object{
+        private const val GARBAGE_DAYS_THRESHOLD = 90
         private const val CONTENT_URI_PREFIX = "content://"
         private const val LOCAL_IMAGE_PREFIX = "file:///"
     }
