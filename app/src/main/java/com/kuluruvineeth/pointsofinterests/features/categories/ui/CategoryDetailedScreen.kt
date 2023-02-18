@@ -65,29 +65,39 @@ fun CategoriesDetailedScreen(
             selectedColorState = model?.color ?: Color.Transparent
         }
     }
+}
 
-    Box(modifier = Modifier.fillMaxSize()){
-        when(uiState){
-            is DetailedCategoriesUiState.Loading -> ProgressView()
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun CategoriesDetailedContent(
+    uiState: DetailedCategoriesUiState,
+    selectedColor: Color,
+    textFieldValue: TextFieldValue,
+    focusRequester: FocusRequester,
+    keyboardController: SoftwareKeyboardController?,
+    onTextChanged: (TextFieldValue) -> Unit,
+    onColorSelected: (Color) -> Unit,
+    onSave: (String, Color) -> Unit,
+    onUpdate: (CategoryUiModel, String, Color) -> Unit
+) {
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        when (uiState) {
+            is DetailedCategoriesUiState.Loading ->
+                ProgressView()
             is DetailedCategoriesUiState.Success -> {
-                val categoryModel = (uiState as DetailedCategoriesUiState.Success).categoryUiModel
-                CategoriesDetailedContent(
-                    selectedCategory = categoryModel,
-                    selectedColor = selectedColorState,
-                    focusRequester = focusRequester,
-                    keyboardController = keyboardController,
-                    textFieldValue = textFieldState,
-                    onTextChanged = { textFieldState = it},
-                    onColorSelected = {selectedColorState = it},
-                    onSave = {name, color ->
-                        viewModel.onCreateItem(name,color)
-                        onBack()
-                    },
-                    onUpdate = {item, name, color ->
-                        viewModel.onUpdateItem(item,name,color)
-                        onBack()
-                    }
-                )
+                    CategoriesDetailedSuccessContent(
+                        selectedCategory = uiState.categoryUiModel,
+                        selectedColor = selectedColor,
+                        focusRequester = focusRequester,
+                        keyboardController = keyboardController,
+                        textFieldValue = textFieldValue,
+                        onTextChanged = onTextChanged,
+                        onColorSelected = onColorSelected,
+                        onSave = onSave,
+                        onUpdate = onUpdate
+                    )
             }
         }
     }
@@ -95,7 +105,7 @@ fun CategoriesDetailedScreen(
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun CategoriesDetailedContent(
+fun CategoriesDetailedSuccessContent(
     selectedCategory: CategoryUiModel? = null,
     selectedColor: Color,
     textFieldValue: TextFieldValue,

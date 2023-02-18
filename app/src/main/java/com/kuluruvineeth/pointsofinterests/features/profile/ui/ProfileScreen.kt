@@ -2,10 +2,12 @@ package com.kuluruvineeth.pointsofinterests.features.profile.ui
 
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -45,6 +47,7 @@ import com.kuluruvineeth.pointsofinterests.navigation.Screen
 import com.kuluruvineeth.pointsofinterests.R
 import com.kuluruvineeth.pointsofinterests.ui.composables.uikit.PulsingProgressBar
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun ProfileScreen(
@@ -84,8 +87,25 @@ fun ProfileScreen(
         getGoogleLoginAuth(context).signOut()
     }
 
+    ProfileScreenContent(
+        profileSections = profileSectionsState,
+        onSignInClicked = onSignInClicked,
+        onSignOutClicked = onSignOutClicked,
+        onNavigateInternal = onNavigateInternal,
+        onSettingsToggled = vm::onSettingsToggled
+    )
+}
+
+@Composable
+fun ProfileScreenContent(
+    profileSections: List<ProfileSectionItem>,
+    onSignInClicked: () -> Unit,
+    onSignOutClicked: () -> Unit,
+    onNavigateInternal: (ProfileSectionType) -> Unit,
+    onSettingsToggled: (ProfileSectionType, Boolean) -> Unit
+) {
     LazyColumn{
-        items(profileSectionsState, key = { item -> item.type }) { item ->
+        items(profileSections, key = { item -> item.type }) { item ->
             if (item is ProfileSectionItem.AccountSectionItem) {
                 AccountSection(userInfo = item.userInfo, onSignInClicked, onSignOutClicked)
             }
@@ -93,7 +113,7 @@ fun ProfileScreen(
                 NavigationSection(item = item, onNavigationClicked = onNavigateInternal)
             }
             if (item is ProfileSectionItem.BooleanSettingsItem) {
-                BooleanSettingsSection(item = item, onToggleBooleanSettings = vm::onSettingsToggled)
+                BooleanSettingsSection(item = item, onToggleBooleanSettings = onSettingsToggled)
             }
             Divider(
                 Modifier

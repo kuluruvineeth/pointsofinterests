@@ -64,7 +64,22 @@ fun SearchScreen(
     LaunchedEffect(key1 = searchState.value){
         viewModel.onSearch(searchState.value.text)
     }
+
+    SearchContent(
+        emptySearchState = emptySearchState,
+        searchScreenState = searchScreenState,
+        onNavigate = onNavigate
+    )
     
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun SearchContent(
+    emptySearchState: Boolean,
+    searchScreenState: SearchScreenUiState,
+    onNavigate: (Screen, List<Pair<String,Any>>) -> Unit
+) {
     AnimatedContent(
         modifier = Modifier.padding(16.dp),
         targetState = emptySearchState to searchScreenState
@@ -84,7 +99,6 @@ fun SearchScreen(
             }
         }
     }
-    
 }
 
 @Composable
