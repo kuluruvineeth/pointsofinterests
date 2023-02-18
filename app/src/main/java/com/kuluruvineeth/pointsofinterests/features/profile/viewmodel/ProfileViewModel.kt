@@ -1,7 +1,11 @@
 package com.kuluruvineeth.pointsofinterests.features.profile.viewmodel
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
 import com.kuluruvineeth.domain.features.profile.interactor.DeleteUserProfileUseCase
@@ -12,9 +16,11 @@ import com.kuluruvineeth.domain.features.profile.module.ManualSettings
 import com.kuluruvineeth.domain.features.profile.module.Profile
 import com.kuluruvineeth.domain.features.profile.module.UserProfile
 import com.kuluruvineeth.pointsofinterests.features.profile.models.*
+import com.kuluruvineeth.pointsofinterests.garbagecollector.GCWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.time.Duration
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,7 +28,8 @@ class ProfileViewModel @Inject constructor(
     getProfileUseCase: GetProfileUseCase,
     private val setUserSettingStateUseCase: SetUserSettingStateUseCase,
     private val setUserProfileUseCase: SetUserProfileUseCase,
-    private val deleteUserProfileUseCase: DeleteUserProfileUseCase
+    private val deleteUserProfileUseCase: DeleteUserProfileUseCase,
+    private val workManager: WorkManager
 ) : ViewModel(){
 
     val profileState = getProfileUseCase(Unit).map {
@@ -34,13 +41,16 @@ class ProfileViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    fun onSettingsToggled(type: ProfileSectionType,currentState: Boolean){
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun onSettingsToggled(type: ProfileSectionType, currentState: Boolean){
         type.toManualSetting()?.let{setting ->
             viewModelScope.launch {
                 setUserSettingStateUseCase(SetUserSettingStateUseCase.Params(
                     setting,
                     !currentState
                 ))
+                if(setting is ManualSettings.UseAutoGc)
+                    onToggleGarbageCollector(currentState.not())
             }
         }
     }
@@ -61,6 +71,19 @@ class ProfileViewModel @Inject constructor(
     fun onSignOutClicked(){
         viewModelScope.launch {
             deleteUserProfileUseCase(Unit)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun onToggleGarbageCollector(newState: Boolean){
+        if(newState){
+            val gcWorkRequest = PeriodicWorkRequestBuilder<GCWorker>(Duration.ofDays(1))
+                .setInitialDelay(Duration.ofDays(1))
+                .addTag(GCWorker.TAG_GC)
+                .build()
+            workManager.enqueue(gcWorkRequest)
+        }else{
+            workManager.cancelAllWorkByTag(GCWorker.TAG_GC)
         }
     }
 

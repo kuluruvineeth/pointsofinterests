@@ -38,6 +38,8 @@ class PoiLocalDataSource @Inject constructor(
 
     override suspend fun deletePoi(id: String){
         poiDao.deletePoi(id.toInt())
+        poiDao.deleteUsedCategories(listOf(id.toInt()))
+        poiDao.deleteCommentsForParent(id.toInt())
     }
 
     @OptIn(ExperimentalTime::class)
