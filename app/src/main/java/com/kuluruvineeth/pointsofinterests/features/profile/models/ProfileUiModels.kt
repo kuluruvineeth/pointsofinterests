@@ -38,6 +38,8 @@ enum class ProfileSectionType{
     ABOUT
 }
 
+val wipeSections = arrayListOf(ProfileSectionType.STATISTICS)
+
 data class UserInfo(
     val fullName: String,
     val email: String,
