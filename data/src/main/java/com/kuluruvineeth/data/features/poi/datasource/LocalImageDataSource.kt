@@ -17,10 +17,10 @@ import kotlin.coroutines.suspendCoroutine
 
 class LocalImageDataSource @Inject constructor(
     @ApplicationContext private val context: Context
-) {
+) : ImageDataSource{
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    suspend fun copyLocalImage(uri: String): String = suspendCoroutine {
+    override suspend fun copyLocalImage(uri: String): String = suspendCoroutine {
         continuation ->
             val fileName = String.format(LOCAL_IMAGE_NAME, Clock.System.now().toEpochMilliseconds())
             val imageFile = File(context.cacheDir,fileName)
@@ -41,7 +41,7 @@ class LocalImageDataSource @Inject constructor(
             }
     }
 
-    suspend fun deleteImage(uri: String) = suspendCoroutine {
+    override suspend fun deleteImage(uri: String) = suspendCoroutine {
         val imageName = Uri.parse(uri).lastPathSegment
         if(imageName != null){
             val imageFile = File(context.cacheDir, imageName)

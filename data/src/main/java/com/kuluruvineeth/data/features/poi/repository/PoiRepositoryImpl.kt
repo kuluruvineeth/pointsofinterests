@@ -3,9 +3,8 @@ package com.kuluruvineeth.data.features.poi.repository
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.kuluruvineeth.data.core.Local
-import com.kuluruvineeth.data.features.poi.datasource.LocalImageDataSource
-import com.kuluruvineeth.data.features.poi.datasource.PoiDataSource
-import com.kuluruvineeth.data.features.poi.datasource.WizardRemoteDataSource
+import com.kuluruvineeth.data.core.Remote
+import com.kuluruvineeth.data.features.poi.datasource.*
 import com.kuluruvineeth.data.features.poi.model.creationDataModel
 import com.kuluruvineeth.data.features.poi.model.toDomain
 import com.kuluruvineeth.data.features.poi.model.toOrderBy
@@ -17,8 +16,8 @@ import javax.inject.Inject
 
 class PoiRepositoryImpl @Inject constructor(
     @Local private val localDataSource: PoiDataSource,
-    private val imageDataSource: LocalImageDataSource,
-    private val wizardRemoteDataSource: WizardRemoteDataSource
+    @Local private val imageDataSource: ImageDataSource,
+    @Remote private val wizardRemoteDataSource: WizardDataSource
 ) : PoiRepository{
     override fun getPoiList(sortOption: PoiSortOption?): Flow<List<PoiModel?>> =
         localDataSource.getPoiList((sortOption ?: PoiSortOption.DATE).toOrderBy())
